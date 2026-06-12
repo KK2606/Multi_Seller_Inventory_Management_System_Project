@@ -15,11 +15,11 @@ admin_router = APIRouter(prefix="/admin", tags=["Admin"])
 
 
 @admin_router.get(
-    "/all-sellers-with-products",
+    "/admin_dashboard",
     response_model=list[Admin_Response_Schema],
     summary="Show all sellers with their products (admin-only access)",
 )
-def admin_route_get_all(
+def get_admin_dashboard(
     db_session: Session = Depends(get_db), Admin_Key: str = Header(None)
 ):
     return show_all_sellers_with_products(db_session=db_session, admin_key=Admin_Key)

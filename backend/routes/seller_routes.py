@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Header
 from db.db_config import Session, get_db
 from schemas.seller_schema import (Add_Seller_Schema, Seller_Response_Schema,
                                    Update_Seller_Schema)
-from services.seller_services import (all_sellers, delete_seller, new_seller,
+from services.seller_services import (get_seller_with_their_products, delete_seller, new_seller,
                                       search_sellers, update_seller)
 
 seller_router = APIRouter(prefix="/seller", tags=["Seller Management"])
@@ -16,7 +16,7 @@ seller_router = APIRouter(prefix="/seller", tags=["Seller Management"])
 
 
 @seller_router.post(
-    "/new-seller-signup", response_model=Seller_Response_Schema
+    "/new-seller-signup"
 )  # Add New Seller
 def new_seller_signup(
     add_seller_data: Add_Seller_Schema, db_session: Session = Depends(get_db)
@@ -32,11 +32,16 @@ def new_seller_signup(
 
 
 @seller_router.get(
-    "/show-all-sellers", response_model=list[Seller_Response_Schema]
-)  # Show All Sellers
-def show_all_sellers(db_session: Session = Depends(get_db)):
-    return all_sellers(db_session=db_session)
-
+    "/seller-dashboard"
+)
+def get_seller_dashboard(
+    SELLER_KEY: str = Header(None),
+    db_session: Session = Depends(get_db),
+):
+    return get_seller_with_their_products(
+        db_session,
+        seller_key=SELLER_KEY
+    )
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -70,7 +75,7 @@ def search_seller_info(
 
 
 @seller_router.put(
-    "/update-seller", response_model=Seller_Response_Schema
+    "/update-seller"
 )  # Update Existing Sellers
 def update_existing_seller(
     update_seller_data: Update_Seller_Schema,

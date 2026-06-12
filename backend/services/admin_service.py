@@ -40,6 +40,7 @@ def show_all_sellers_with_products(db_session: Session, admin_key: str):
                     "item_id": item.item_id,
                     "item_name": item.item_name,
                     "item_stock_qty": item.item_stock_qty,
+                    "item_category": item.item_category,
                     "item_price": item.item_price,
                 }
             )

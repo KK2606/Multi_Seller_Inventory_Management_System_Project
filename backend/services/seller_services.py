@@ -14,12 +14,62 @@ from services.validators import (duplicate_email_check, duplicate_key_check,
 # TODO: Future updates may include additional features such as pagination, sorting, and filtering to provide a better user experience for users in the system.
 
 
-def all_sellers(db_session: Session):
-    sellers = (
-        db_session.query(Seller_database).order_by(Seller_database.seller_id).all()
-    )
-    return sellers
+def get_seller_with_their_products(
+    db_session: Session,
+    seller_key: str
+):
 
+    seller = authenticate_seller(
+        seller_key,
+        db_session
+    )
+
+    items = (
+        db_session.query(
+            Inventory_database
+        )
+        .filter(
+            Inventory_database.seller_id
+            == seller.seller_id
+        )
+        .all()
+    )
+
+    product_list = []
+
+    for item in items:
+
+        product_list.append(
+            {
+                "item_id": item.item_id,
+
+                "item_name": item.item_name,
+
+                "item_stock_qty": item.item_stock_qty,
+                
+                "item_category": item.item_category,
+
+                "item_price": item.item_price,
+                
+            }
+        )
+
+    return {
+        "seller_id":
+            seller.seller_id,
+
+        "seller_name":
+            seller.seller_name,
+
+        "seller_email":
+            seller.seller_email,
+
+        "seller_key":
+            seller.seller_key,
+
+        "products":
+            product_list,
+    }
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -53,7 +103,7 @@ def search_sellers(
     return sellers
 
 
-# -----------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Add New Seller: This function allows new sellers to be added to the inventory system by providing their name, email, and a unique seller key. The function checks for duplicate email and seller key to maintain data integrity in the system before creating a new seller account.
 # TODO: Future updates may include additional validation rules and more advanced account creation capabilities to enhance the seller account management features.
@@ -61,25 +111,9 @@ def search_sellers(
 
 def new_seller(db_session: Session, add_seller_data: Add_Seller_Schema):  # Add Seller
 
-    existing_email = (
-        db_session.query(Seller_database)
-        .filter(Seller_database.seller_email == add_seller_data.add_seller_email)
-        .first()
-    )
+    duplicate_email_check(add_seller_data.add_seller_email, db_session)
 
-    if (
-        existing_email
-    ):  # Duplicate email check to ensure uniqueness of seller emails in the system
-        raise HTTPException(status_code=400, detail="Email already exists")
-
-    existing_key = (
-        db_session.query(Seller_database)
-        .filter(Seller_database.seller_key == add_seller_data.add_seller_key)
-        .first()
-    )  # Duplicate seller key check to ensure uniqueness of seller keys in the system
-
-    if existing_key:
-        raise HTTPException(status_code=400, detail="Seller key already exists")
+    duplicate_key_check(db_session, add_seller_data.add_seller_key)
 
     seller = Seller_database(
         seller_name=add_seller_data.add_seller_name,
@@ -89,10 +123,10 @@ def new_seller(db_session: Session, add_seller_data: Add_Seller_Schema):  # Add 
 
     db_session.add(seller)
     db_session.commit()
-    return seller
+    return f"New Seller '{add_seller_data.add_seller_name}' added successfully with ID {seller.seller_id}"
 
 
-# -----------------------------------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Update Seller Account: This function allows sellers to update their account information in the inventory system by providing their unique seller ID, updated seller data, and seller key for authentication. The function ensures that only authorized sellers can update their own account information and checks for duplicate email and seller key to maintain data integrity in the system.
 # TODO: Future updates may include additional validation rules and more advanced update capabilities to enhance the seller account management features.
@@ -136,7 +170,7 @@ def update_seller(
         seller.seller_key = update_seller_data.update_seller_key
 
     db_session.commit()
-    return seller
+    return f"Seller {update_seller_id} '{seller.seller_name}' updated successfully"
 
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -144,6 +178,7 @@ def update_seller(
 # DELETE SELLER ACCOUNT: This function allows sellers to delete their accounts from the inventory system by providing their unique seller ID and seller key for authentication. The function ensures that only authorized sellers can delete their own accounts and checks for any existing inventory items associated with the seller before allowing the deletion to prevent orphan stock in the system.
 # TODO: Future updates may include additional features such as account recovery or deactivation instead of permanent deletion to provide a better user experience for sellers.
 
+# ! STATUS: Completed and fully functional (DON'T TOUCH)
 
 def delete_seller(db_session: Session, del_seller_id: int, seller_key: str):
 
@@ -178,4 +213,4 @@ def delete_seller(db_session: Session, del_seller_id: int, seller_key: str):
     db_session.delete(seller)
     db_session.commit()
 
-    return f"Seller {del_seller_id} deleted successfully"
+    return f"Seller {del_seller_id} '{seller.seller_name}' deleted successfully"

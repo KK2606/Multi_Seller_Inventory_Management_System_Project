@@ -1,154 +1,159 @@
-import { useState } from "react";
-import {
-    useLocation,
-    useNavigate,
-    useParams
-} from "react-router-dom";
+import { useContext, useState } from "react";
+import toast from "react-hot-toast";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import api from "../services/api";
+import api, { getApiErrorMessage } from "../services/api";
+import { Seller_Context } from "../context/sellerContext";
 
 function Update_Seller() {
+  const { sellerId } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.returnTo || "/seller-portal";
+  const { setSellerKey: setContextSellerKey } = useContext(Seller_Context);
+  const [sellerKey, setSellerKey] = useState(location.state?.sellerKey || "");
+  const [sellerName, setSellerName] = useState("");
+  const [sellerEmail, setSellerEmail] = useState("");
+  const [newSellerKey, setNewSellerKey] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-    const { sellerId } =
-        useParams();
+  const validateForm = () => {
+    const hasUpdateValue =
+      sellerName.trim() || sellerEmail.trim() || newSellerKey.trim();
 
-    const navigate =
-        useNavigate();
+    if (!sellerKey.trim()) {
+      toast.error("Current seller key is required");
+      return false;
+    }
 
-    const location =
-        useLocation();
+    if (!hasUpdateValue) {
+      toast.error("Enter at least one seller field to update");
+      return false;
+    }
 
-    const sellerKey =
-        location.state?.sellerKey;
+    if (sellerEmail.trim() && !sellerEmail.includes("@")) {
+      toast.error("Enter a valid seller email");
+      return false;
+    }
 
-    const [sellerName,
-        setSellerName] =
-        useState("");
+    return true;
+  };
 
-    const [sellerEmail,
-        setSellerEmail] =
-        useState("");
+  const handleUpdate = async (event) => {
+    event.preventDefault();
 
-    const [newSellerKey,
-        setNewSellerKey] =
-        useState("");
+    if (!validateForm()) {
+      return;
+    }
 
-    const handleUpdate =
-        async (e) => {
+    try {
+      setSubmitting(true);
 
-            e.preventDefault();
+      await api.put(
+        "/seller/update-seller",
+        {
+          update_seller_name: sellerName.trim() || null,
+          update_seller_email: sellerEmail.trim() || null,
+          update_seller_key: newSellerKey.trim() || null,
+        },
+        {
+          params: {
+            SELLER_ID: sellerId,
+          },
+          headers: {
+            "SELLER-KEY": sellerKey.trim(),
+          },
+        }
+      );
 
-            try {
+      toast.success("Seller updated successfully");
+      setContextSellerKey(newSellerKey.trim() || sellerKey.trim());
+      navigate(returnTo);
+    } catch (apiError) {
+      toast.error(getApiErrorMessage(apiError, "Update failed"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-                await api.put(
-                    "/seller/update-seller",
-                    {
-                        update_seller_name:
-                            sellerName || null,
-
-                        update_seller_email:
-                            sellerEmail || null,
-
-                        update_seller_key:
-                            newSellerKey || null
-                    },
-                    {
-                        params: {
-                            SELLER_ID:
-                                sellerId
-                        },
-
-                        headers: {
-                            "SELLER-KEY":
-                                sellerKey
-                        }
-                    }
-                );
-
-                alert(
-                    "Seller Updated Successfully"
-                );
-
-                navigate(
-                    "/admin"
-                );
-            }
-            catch (error) {
-
-                console.error(error);
-
-                alert(
-                    error.response?.data?.detail ||
-                    "Update Failed"
-                );
-            }
-        };
-
-    return (
+  return (
+    <section className="page">
+      <header className="page-header">
         <div>
-
-            <h1>
-                Update Seller
-            </h1>
-
-            <form
-                onSubmit={
-                    handleUpdate
-                }
-            >
-
-                <input
-                    type="text"
-                    placeholder="Seller Name"
-                    value={sellerName}
-                    onChange={(e) =>
-                        setSellerName(
-                            e.target.value
-                        )
-                    }
-                />
-
-                <br />
-                <br />
-
-                <input
-                    type="email"
-                    placeholder="Seller Email"
-                    value={sellerEmail}
-                    onChange={(e) =>
-                        setSellerEmail(
-                            e.target.value
-                        )
-                    }
-                />
-
-                <br />
-                <br />
-
-                <input
-                    type="text"
-                    placeholder="New Seller Key"
-                    value={newSellerKey}
-                    onChange={(e) =>
-                        setNewSellerKey(
-                            e.target.value
-                        )
-                    }
-                />
-
-                <br />
-                <br />
-
-                <button
-                    type="submit"
-                >
-                    Update Seller
-                </button>
-
-            </form>
-
+          <p className="eyebrow">Seller Management</p>
+          <h1>Update Seller</h1>
+          <p>Seller ID: {sellerId}</p>
         </div>
-    );
+
+        <Link className="button button--ghost" to={returnTo}>
+          Back
+        </Link>
+      </header>
+
+      <form className="form-card" onSubmit={handleUpdate} noValidate>
+        <p className="form-card__hint">
+          Fill only the seller fields that should change. The current seller key
+          is required for authorization.
+        </p>
+
+        <div className="form-grid">
+          <label className="field">
+            <span>
+              Current Seller Key<em aria-hidden="true"> *</em>
+            </span>
+            <input
+              type="password"
+              value={sellerKey}
+              placeholder="Enter current seller key"
+              autoComplete="off"
+              onChange={(event) => setSellerKey(event.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            <span>Seller Name</span>
+            <input
+              type="text"
+              value={sellerName}
+              placeholder="Enter new seller name"
+              onChange={(event) => setSellerName(event.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            <span>Seller Email</span>
+            <input
+              type="email"
+              value={sellerEmail}
+              placeholder="Enter new seller email"
+              onChange={(event) => setSellerEmail(event.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            <span>New Seller Key</span>
+            <input
+              type="password"
+              value={newSellerKey}
+              placeholder="Enter new seller key"
+              autoComplete="new-password"
+              onChange={(event) => setNewSellerKey(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className="form-actions">
+          <button
+            type="submit"
+            className="button button--primary"
+            disabled={submitting}
+          >
+            {submitting ? "Saving..." : "Update Seller"}
+          </button>
+        </div>
+      </form>
+    </section>
+  );
 }
 
 export default Update_Seller;

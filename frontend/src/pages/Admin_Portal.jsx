@@ -1,418 +1,364 @@
-import { useState } from "react";
-import api from "../services/api";
+import { useCallback, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
+import PageState from "../components/PageState";
+import Product_Table from "../components/Product_Table";
+import SearchInput from "../components/SearchInput";
+import api, { asArray, getApiErrorMessage } from "../services/api";
+
 function Admin_Portal() {
+  const navigate = useNavigate();
+  const [adminKey, setAdminKey] = useState("");
+  const [sellers, setSellers] = useState([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [dashboardLoaded, setDashboardLoaded] = useState(false);
+  const [error, setError] = useState("");
+  const [busyAction, setBusyAction] = useState("");
 
-    const navigate =
-        useNavigate();
+  const loadDashboard = useCallback(async () => {
+    const trimmedAdminKey = adminKey.trim();
 
-    const [adminKey, setAdminKey] =
-        useState("");
+    if (!trimmedAdminKey) {
+      toast.error("Please enter admin key");
+      return;
+    }
 
-    const [sellers, setSellers] =
-        useState([]);
+    try {
+      setLoading(true);
+      setAdminKey("")
+      setError("");
 
-    const [loading, setLoading] =
-        useState(false);
+      const response = await api.get("/admin/admin_dashboard", {
+        headers: {
+          "Admin-Key": trimmedAdminKey,
+        },
+      });
 
-    const loadDashboard = async () => {
+      setSellers(asArray(response.data));
+      setDashboardLoaded(true);
+    } catch (apiError) {
+      const message = getApiErrorMessage(apiError, "Failed to load dashboard");
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  }, [adminKey]);
 
-        if (!adminKey.trim()) {
-            alert(
-                "Please Enter Admin Key"
-            );
-            return;
-        }
+  const totalProducts = useMemo(
+    () =>
+      sellers.reduce(
+        (total, seller) => total + asArray(seller.products).length,
+        0
+      ),
+    [sellers]
+  );
 
-        try {
+  const normalizedSearch = search.trim().toLowerCase();
 
-            setLoading(true);
+  const filteredSellers = useMemo(() => {
+    if (!normalizedSearch) {
+      return sellers;
+    }
 
-            const response =
-                await api.get(
-                    "/admin/all-sellers-with-products",
-                    {
-                        headers: {
-                            "Admin-Key": adminKey
-                        }
-                    }
-                );
+    return sellers.filter((seller) => {
+      const productsText = asArray(seller.products)
+        .map((product) =>
+          [
+            product.item_id,
+            product.item_name,
+            product.item_category,
+            product.item_description,
+          ]
+            .filter(Boolean)
+            .join(" ")
+        )
+        .join(" ");
 
-            setSellers(response.data);
+      const searchableText = [
+        seller.seller_id,
+        seller.seller_name,
+        seller.seller_email,
+        seller.seller_key,
+        productsText,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
 
-        }
-        catch (error) {
+      return searchableText.includes(normalizedSearch);
+    });
+  }, [normalizedSearch, sellers]);
 
-            console.error(error);
+  const handleDashboardSubmit = (event) => {
+    event.preventDefault();
+    loadDashboard();
+  };
 
-            alert(
-                error.response?.data?.detail ||
-                "Failed To Load Dashboard"
-            );
-        }
-        finally {
-            setLoading(false);
-        }
-    };
+  const deleteProduct = async (productId, sellerId, sellerKey) => {
+    if (!sellerKey) {
+      toast.error("Seller key is missing for this product");
+      return;
+    }
 
-    const deleteProduct = async (
-        productId,
-        sellerKey
-    ) => {
+    const confirmed = window.confirm("Delete this product?");
 
-        const confirmDelete =
-            window.confirm(
-                "Delete this product?"
-            );
+    if (!confirmed) {
+      return;
+    }
 
-        if (!confirmDelete) {
-            return;
-        }
+    try {
+      setBusyAction(`product-${productId}`);
 
-        try {
+      await api.delete("/inventory/delete-product", {
+        params: {
+          DEL_ID: productId,
+        },
+        headers: {
+          "SELLER-KEY": sellerKey,
+        },
+      });
 
-            await api.delete(
-                "/inventory/delete-product",
-                {
-                    params: {
-                        DEL_ID: productId
-                    },
-                    headers: {
-                        "SELLER-KEY": sellerKey
-                    }
-                }
-            );
-
-            alert(
-                "Product Deleted Successfully"
-            );
-
-            loadDashboard();
-
-        }
-        catch (error) {
-
-            console.error(error);
-
-            console.log(
-                error.response
-            );
-
-            console.log(
-                error.response?.data
-            );
-
-            alert(
-                error.response?.data?.detail ||
-                "Delete Failed"
-            );
-        }
-    };
-
-    const deleteSeller = async (
-        sellerId,
-        sellerKey
-    ) => {
-
-        const confirmDelete =
-            window.confirm(
-                "Delete this seller?"
-            );
-
-        if (!confirmDelete) {
-            return;
-        }
-
-        try {
-
-            await api.delete(
-                "/seller/delete-seller",
-                {
-                    params: {
-                        DEL_ID: sellerId
-                    },
-                    headers: {
-                        "SELLER-KEY": sellerKey
-                    }
-                }
-            );
-
-            alert(
-                "Seller Deleted Successfully"
-            );
-
-            loadDashboard();
-
-        }
-        catch (error) {
-
-            console.error(error);
-
-            alert(
-                error.response?.data?.detail ||
-                "Delete Failed"
-            );
-        }
-    };
-
-    const totalProducts =
-        sellers.reduce(
-            (total, seller) =>
-                total + seller.products.length,
-            0
-        );
-
-    return (
-        <div
-            style={{
-                padding: "20px"
-            }}
-        >
-
-            <h1>
-                Admin Portal
-            </h1>
-
-            <div
-                style={{
-                    marginBottom: "20px"
-                }}
-            >
-
-                <input
-                    type="text"
-                    placeholder="Enter Admin Key"
-                    value={adminKey}
-                    onChange={(e) =>
-                        setAdminKey(
-                            e.target.value
-                        )
-                    }
-                    style={{
-                        padding: "10px",
-                        width: "250px"
-                    }}
-                />
-
-                <button
-                    onClick={loadDashboard}
-                    style={{
-                        marginLeft: "10px",
-                        padding: "10px"
-                    }}
-                >
-                    Load Dashboard
-                </button>
-
-            </div>
-
-            {
-                loading &&
-                <h2>
-                    Loading...
-                </h2>
+      setSellers((currentSellers) =>
+        currentSellers.map((seller) =>
+          seller.seller_id === sellerId
+            ? {
+              ...seller,
+              products: asArray(seller.products).filter(
+                (product) => product.item_id !== productId
+              ),
             }
+            : seller
+        )
+      );
 
-            {
-                sellers.length > 0 && (
-                    <div>
+      toast.success("Product deleted successfully");
+    } catch (apiError) {
+      toast.error(getApiErrorMessage(apiError, "Delete failed"));
+    } finally {
+      setBusyAction("");
+    }
+  };
 
-                        <h2>
-                            Total Sellers:
-                            {" "}
-                            {sellers.length}
-                        </h2>
+  const deleteSeller = async (sellerId, sellerKey) => {
+    if (!sellerKey) {
+      toast.error("Seller key is missing for this seller");
+      return;
+    }
 
-                        <h2>
-                            Total Products:
-                            {" "}
-                            {totalProducts}
-                        </h2>
+    const confirmed = window.confirm("Delete this seller?");
 
-                    </div>
-                )
-            }
+    if (!confirmed) {
+      return;
+    }
 
-            {
-                sellers.map((seller) => (
+    try {
+      setBusyAction(`seller-${sellerId}`);
 
-                    <div
-                        key={seller.seller_id}
-                        style={{
-                            border: "1px solid gray",
-                            borderRadius: "10px",
-                            padding: "15px",
-                            marginBottom: "20px"
-                        }}
-                    >
+      await api.delete("/seller/delete-seller", {
+        params: {
+          DEL_ID: sellerId,
+        },
+        headers: {
+          "SELLER-KEY": sellerKey,
+        },
+      });
 
-                        <h2>
-                            {seller.seller_name}
-                        </h2>
+      setSellers((currentSellers) =>
+        currentSellers.filter((seller) => seller.seller_id !== sellerId)
+      );
 
-                        <p>
-                            <strong>
-                                Seller ID:
-                            </strong>
-                            {" "}
-                            {seller.seller_id}
-                        </p>
+      toast.success("Seller deleted successfully");
+    } catch (apiError) {
+      toast.error(getApiErrorMessage(apiError, "Delete failed"));
+    } finally {
+      setBusyAction("");
+    }
+  };
 
-                        <p>
-                            <strong>
-                                Email:
-                            </strong>
-                            {" "}
-                            {seller.seller_email}
-                        </p>
-                        <p>
-                            <strong>
-                                Seller Key:
-                            </strong>
-                            {" "}
-                            {seller.seller_key}
-                        </p>
-                        <div
-                            style={{
-                                marginBottom: "15px"
-                            }}
-                        >
-                            <button
-                                onClick={() =>
-                                    navigate(
-                                        `/update-seller/${seller.seller_id}`,
-                                        {
-                                            state: {
-                                                sellerKey:
-                                                    seller.seller_key
-                                            }
-                                        }
-                                    )
-                                }
-                            >
-                                Update Seller
-                            </button>
-                            <button
-                                style={{
-                                    marginLeft: "10px"
-                                }}
-                                onClick={() =>
-                                    deleteSeller(
-                                        seller.seller_id,
-                                        seller.seller_key
-                                    )
-                                }
-                            >
-                                Delete Seller
-                            </button>
+  const editSeller = (seller) => {
+    navigate(`/update-seller/${seller.seller_id}`, {
+      state: {
+        sellerKey: seller.seller_key,
+      },
+    });
+  };
 
-                        </div>
-                        <h3>
-                            Products
-                        </h3>
+  const editProduct = (productId, sellerKey) => {
+    navigate(`/update-product/${productId}`, {
+      state: {
+        sellerKey,
+      },
+    });
+  };
 
-                        {
-                            seller.products.length === 0
-                                ? (
-                                    <p>
-                                        No Products Found
-                                    </p>
-                                )
-                                : (
-                                    seller.products.map(
-                                        (product) => (
-
-                                            <div
-                                                key={
-                                                    product.item_id
-                                                }
-                                                style={{
-                                                    marginLeft: "20px",
-                                                    borderBottom:
-                                                        "1px solid lightgray",
-                                                    marginBottom: "10px",
-                                                    paddingBottom: "10px"
-                                                }}
-                                            >
-
-                                                <p>
-                                                    <strong>
-                                                        Product ID:
-                                                    </strong>
-                                                    {" "}
-                                                    {product.item_id}
-                                                </p>
-
-                                                <p>
-                                                    <strong>
-                                                        Name:
-                                                    </strong>
-                                                    {" "}
-                                                    {product.item_name}
-                                                </p>
-
-                                                <p>
-                                                    <strong>
-                                                        Stock:
-                                                    </strong>
-                                                    {" "}
-                                                    {product.item_stock_qty}
-                                                </p>
-
-                                                <p>
-                                                    <strong>
-                                                        Price:
-                                                    </strong>
-                                                    {" "}
-                                                    ₹
-                                                    {product.item_price}
-                                                </p>
-                                                <button
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/update-product/${product.item_id}`,
-                                                            {
-                                                                state: {
-                                                                    sellerKey:
-                                                                        seller.seller_key
-                                                                }
-                                                            }
-                                                        )
-                                                    }
-                                                >
-                                                    Update
-                                                </button>
-                                                <button
-                                                    style={{
-                                                        marginLeft:
-                                                            "10px"
-                                                    }}
-                                                    onClick={() =>
-                                                        deleteProduct(
-                                                            product.item_id,
-                                                            seller.seller_key
-                                                        )
-                                                    }
-                                                >
-                                                    Delete
-                                                </button>
-
-                                            </div>
-
-                                        )
-                                    )
-                                )
-                        }
-
-                    </div>
-
-                ))
-            }
-
+  return (
+    <section className="page">
+      <header className="page-header">
+        <div>
+          <p className="eyebrow">Admin Portal</p>
+          <h1>Dashboard</h1>
+          <p>
+            Load all sellers with their products, then manage seller and product
+            records without leaving the page.
+          </p>
         </div>
-    );
-}
+      </header>
 
+      <form className="card toolbar" onSubmit={handleDashboardSubmit}>
+        <label className="inline-field">
+          <span>Admin Key</span>
+          <input
+            type="password"
+            value={adminKey}
+            placeholder="Enter admin key"
+            autoComplete="off"
+            onChange={(event) => setAdminKey(event.target.value)}
+          />
+        </label>
+
+        <button
+          type="submit"
+          className="button button--primary"
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Load Dashboard"}
+        </button>
+      </form>
+
+      {dashboardLoaded && (
+        <>
+          <div className="stats-grid">
+            <article className="card">
+              <span>Total Sellers</span>
+              <strong>{sellers.length}</strong>
+            </article>
+
+            <article className="card">
+              <span>Total Products</span>
+              <strong>{totalProducts}</strong>
+            </article>
+
+            <article className="card">
+              <span>Visible Results</span>
+              <strong>{filteredSellers.length}</strong>
+            </article>
+          </div>
+
+          <div className="card">
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              label="Search dashboard"
+              placeholder="Search sellers, keys, products, categories..."
+            />
+          </div>
+        </>
+      )}
+
+      {loading && (
+        <PageState
+          title="Loading dashboard"
+          message="Fetching seller and product data from the admin API."
+          variant="loading"
+        />
+      )}
+
+      {!loading && error && (
+        <PageState
+          title="Dashboard unavailable"
+          message={error}
+          variant="error"
+          action={
+            <button
+              type="button"
+              className="button button--ghost"
+              onClick={loadDashboard}
+            >
+              Retry
+            </button>
+          }
+        />
+      )}
+
+      {!loading && dashboardLoaded && !error && filteredSellers.length === 0 && (
+        <PageState
+          title="No sellers found"
+          message={
+            search.trim()
+              ? "No sellers or products match this search."
+              : "The admin dashboard returned no sellers."
+          }
+          action={
+            search.trim() && (
+              <button
+                type="button"
+                className="button button--ghost"
+                onClick={() => setSearch("")}
+              >
+                Clear Search
+              </button>
+            )
+          }
+        />
+      )}
+
+      {!loading &&
+        dashboardLoaded &&
+        !error &&
+        filteredSellers.map((seller) => {
+          const products = asArray(seller.products);
+
+          return (
+            <article className="seller-panel" key={seller.seller_id}>
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">Seller #{seller.seller_id}</p>
+                  <h2>{seller.seller_name || "Unnamed seller"}</h2>
+                  <p>{seller.seller_email || "No email provided"}</p>
+                  <p>Seller Key: {seller.seller_key || "—"}</p>
+                </div>
+
+                <div className="row-actions">
+                  <button
+                    type="button"
+                    className="button button--ghost button--small"
+                    disabled={busyAction === `seller-${seller.seller_id}`}
+                    onClick={() => editSeller(seller)}
+                  >
+                    Update Seller
+                  </button>
+
+                  <button
+                    type="button"
+                    className="button button--danger button--small"
+                    disabled={busyAction === `seller-${seller.seller_id}`}
+                    onClick={() =>
+                      deleteSeller(seller.seller_id, seller.seller_key)
+                    }
+                  >
+                    Delete Seller
+                  </button>
+                </div>
+              </div>
+
+              <Product_Table
+                products={products}
+                showActions
+                actionDisabled={Boolean(busyAction)}
+                emptyMessage="This seller has no products yet."
+                onEdit={(productId) => editProduct(productId, seller.seller_key)}
+                onDelete={(productId) =>
+                  deleteProduct(productId, seller.seller_id, seller.seller_key)
+                }
+              />
+            </article>
+          );
+        })}
+    </section>
+  );
+}
 
 export default Admin_Portal;

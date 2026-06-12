@@ -6,6 +6,7 @@
 # - The seller key must contain only alphanumeric characters (A-Z, a-z, 0-9).
 
 from pydantic import BaseModel, EmailStr, Field
+from schemas.admin_schema import Product_Schema as Products_Schema
 
 
 # Pydantic schema for seller response containing seller information

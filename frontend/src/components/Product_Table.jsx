@@ -1,101 +1,84 @@
-function Product_Table({ seller }) {
-    return (
-        <div
-            style={{
-                marginTop: "20px",
-                border: "1px solid gray",
-                padding: "15px",
-                borderRadius: "10px"
-            }}
-        >
-            <h2>{seller.name}'s Products</h2>
+const currencyFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+});
 
-            <p>
-                Total Products: {seller.products.length}
-            </p>
+function Product_Table({
+  products = [],
+  onEdit,
+  onDelete,
+  showActions = false,
+  actionDisabled = false,
+  emptyMessage = "No products found.",
+}) {
+  const safeProducts = Array.isArray(products) ? products : [];
 
-            <p>
-                Total Quantity: {
-                    seller.products.reduce(
-                        (sum, product) => sum + product.qty,
-                        0
-                    )
-                }
-            </p>
+  if (safeProducts.length === 0) {
+    return <div className="empty-inline">{emptyMessage}</div>;
+  }
 
-            <table
-                style={{
-                    width: "100%",
-                    borderCollapse: "collapse",
-                    marginTop: "15px"
-                }}
-            >
-                <thead>
-                    <tr>
-                        <th
-                            style={{
-                                border: "1px solid gray",
-                                padding: "10px"
-                            }}
-                        >
-                            Product
-                        </th>
+  return (
+    <div className="table-wrap">
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            {showActions && <th>Actions</th>}
+          </tr>
+        </thead>
 
-                        <th
-                            style={{
-                                border: "1px solid gray",
-                                padding: "10px"
-                            }}
-                        >
-                            Quantity
-                        </th>
+        <tbody>
+          {safeProducts.map((product) => {
+            const productId = product.item_id ?? product.id;
+            const productName = product.item_name ?? product.name;
+            const category = product.item_category ?? "—";
+            const quantity = product.item_stock_qty ?? product.qty ?? 0;
+            const price = product.item_price ?? product.price ?? 0;
 
-                        <th
-                            style={{
-                                border: "1px solid gray",
-                                padding: "10px"
-                            }}
-                        >
-                            Price
-                        </th>
-                    </tr>
-                </thead>
+            return (
+              <tr key={productId}>
+                <td data-label="ID">{productId}</td>
+                <td data-label="Product">{productName || "Unnamed product"}</td>
+                <td data-label="Category">{category}</td>
+                <td data-label="Quantity">{quantity}</td>
+                <td data-label="Price">
+                  {currencyFormatter.format(Number(price) || 0)}
+                </td>
 
-                <tbody>
-                    {seller.products.map((product) => (
-                        <tr key={product.id}>
-                            <td
-                                style={{
-                                    border: "1px solid gray",
-                                    padding: "10px"
-                                }}
-                            >
-                                {product.name}
-                            </td>
+                {showActions && (
+                  <td data-label="Actions">
+                    <div className="row-actions">
+                      <button
+                        type="button"
+                        className="button button--ghost button--small"
+                        disabled={actionDisabled}
+                        onClick={() => onEdit(productId)}
+                      >
+                        Update
+                      </button>
 
-                            <td
-                                style={{
-                                    border: "1px solid gray",
-                                    padding: "10px"
-                                }}
-                            >
-                                {product.qty}
-                            </td>
-
-                            <td
-                                style={{
-                                    border: "1px solid gray",
-                                    padding: "10px"
-                                }}
-                            >
-                                ₹{product.price}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
+                      <button
+                        type="button"
+                        className="button button--danger button--small"
+                        disabled={actionDisabled}
+                        onClick={() => onDelete(productId)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                )}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export default Product_Table;

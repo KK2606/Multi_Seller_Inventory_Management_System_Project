@@ -9,6 +9,7 @@ class Product_Schema(BaseModel):
     item_id: int
     item_name: str
     item_stock_qty: int
+    item_category: str
     item_price: float
 
 
