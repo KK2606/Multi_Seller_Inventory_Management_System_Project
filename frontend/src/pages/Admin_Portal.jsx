@@ -313,6 +313,7 @@ function Admin_Portal() {
 
           return (
             <article className="seller-panel" key={seller.seller_id}>
+
               <div className="section-heading">
                 <div>
                   <p className="eyebrow">Seller #{seller.seller_id}</p>
@@ -322,6 +323,15 @@ function Admin_Portal() {
                 </div>
 
                 <div className="row-actions">
+                  <button
+                    type="button"
+                    className="button button--primary button--small"
+                    disabled={busyAction === `seller-${seller.seller_id}`}
+                    onClick={() => navigate("/add-product",)}
+                  >
+                    Add New Product
+                  </button>
+
                   <button
                     type="button"
                     className="button button--ghost button--small"

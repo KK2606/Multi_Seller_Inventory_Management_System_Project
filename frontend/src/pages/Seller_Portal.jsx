@@ -66,12 +66,14 @@ function Seller_Portal() {
 
       setSellerDashboard(response.data);
       setLoaded(true);
-      setSellerKey("");
+      toast.success("Welcome, " + (response.data.seller_name || "seller") + "!");
+
     } catch (apiError) {
       const message = getApiErrorMessage(
         apiError,
         "Failed to load seller dashboard"
       );
+      
       setSellerDashboard(null);
       setError(message);
       toast.error(message);
@@ -83,6 +85,19 @@ function Seller_Portal() {
   const handleLoadSubmit = (event) => {
     event.preventDefault();
     loadSellerDashboard();
+  };
+
+  const addProduct = () => {
+    if (!sellerDashboard) {
+      return;
+    }
+
+    navigate(`/add-product`, {
+      state: {
+        sellerKey: sellerKey.trim(),
+        returnTo: "/seller-portal",
+      },
+    });
   };
 
   const editSeller = () => {
@@ -274,9 +289,18 @@ function Seller_Portal() {
                 <p className="eyebrow">My Seller Profile</p>
                 <h2>{sellerDashboard.seller_name || "Unnamed seller"}</h2>
                 <p>{sellerDashboard.seller_email || "No email provided"}</p>
+                <p>Seller Key: {sellerDashboard.seller_key || "—"}</p>
               </div>
 
               <div className="row-actions">
+                <button
+                  type="button"
+                  className="button button--primary button--small"
+                  disabled={Boolean(busyAction)}
+                  onClick={addProduct}
+                >
+                  Add New Product
+                </button>
                 <button
                   type="button"
                   className="button button--ghost button--small"
@@ -299,7 +323,7 @@ function Seller_Portal() {
 
             {products.length > 0 && (
               <p className="form-card__hint">
-                Delete all owned products before deleting your seller profile.
+                Note: All owned products must be deleted before deleting your seller profile.
               </p>
             )}
           </article>
@@ -312,10 +336,6 @@ function Seller_Portal() {
                 label="Search my products"
                 placeholder="Search by product name, ID, stock, or price..."
               />
-
-              <Link className="button button--primary" to="/add-product">
-                Add Product
-              </Link>
             </div>
           </div>
 

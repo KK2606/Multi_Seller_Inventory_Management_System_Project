@@ -5,7 +5,7 @@ const navItems = [
   { to: "/products", label: "Products" },
   { to: "/seller-portal", label: "Seller Portal" },
   { to: "/admin-portal", label: "Admin Portal" },
-  { to: "/add-product", label: "Add Product" },
+  { to: "/new-seller-signup", label: "New Seller Registration" },
 ];
 
 function Navbar() {
