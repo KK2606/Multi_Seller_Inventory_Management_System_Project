@@ -485,12 +485,12 @@ DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
 ### Products Page
 ![Products Page](frontend/images/all_products_page.png)
 
-### Seller Portal
-![Seller Portal](frontend/images/seller_dahsboard.png)
+### Seller Dashboard
+![Seller Dashboard](frontend/images/seller_dahsboard.png)
 
 
-### Admin Portal
-![Admin Portal](frontend/images/admin_dahsboard.png)
+### Admin Dashboard
+![Admin Dashboardl](frontend/images/admin_dahsboard.png)
 
 ### Add Product Form
 ![Add Product Form](frontend/images/add_product_form.png)
