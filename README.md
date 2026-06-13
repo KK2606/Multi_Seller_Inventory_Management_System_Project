@@ -390,6 +390,12 @@ python db/db_inventory.py
 ```bash
 uvicorn main:app --reload
 ```
+6. Import sample data (optional):
+```bash
+python -m scripts.csvdata_seller_import
+python -m scripts.csvdata_inventory_import
+```
+
 
 The backend will be available at `http://127.0.0.1:8000`
 
@@ -471,11 +477,13 @@ DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
 
 ## Screenshots
 
+### Frontend Screenshots
+
 ### Home Page
 *[Placeholder: Screenshot of the home page with feature cards and call-to-action]*
 
 ### Products Page
-*[Placeholder: Screenshot of the products page with card-based layout and search functionality]*
+![Products Page](frontend/images/all_products_page.png)
 
 ### Seller Portal
 *[Placeholder: Screenshot of the seller dashboard with statistics and product grid]*
@@ -485,6 +493,31 @@ DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
 
 ### Add Product Form
 *[Placeholder: Screenshot of the add product form with validation]*
+
+### Backend Screenshots
+
+### Swagger API Overview
+
+> Overview of all available API endpoints.
+
+![Swagger Overview](backend/images/swagger_overview.png)
+
+### Add Item Endpoint Example
+
+> Example of request body, responses, and validation for the Add Item API.
+
+![Add Item Endpoint](backend/images/add_item_endpoint.png)
+
+### Database Tables
+
+#### Inventory Table
+
+![Inventory Table](backend/images/inventory_table.png)
+
+#### Seller Table
+
+![Seller Table](backend/images/seller_table.png)
+
 
 ## Security Notes
 
