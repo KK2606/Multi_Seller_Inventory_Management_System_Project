@@ -10,6 +10,7 @@ import Products from "./pages/Products";
 import Seller_Portal from "./pages/Seller_Portal";
 import Update_Product from "./pages/Update_Product";
 import Update_Seller from "./pages/Update_Seller";
+import New_Seller from "./pages/New_Seller";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/add-product" element={<Add_Product />} />
           <Route path="/update-product/:id" element={<Update_Product />} />
           <Route path="/update-seller/:sellerId" element={<Update_Seller />} />
+          <Route path="/new-seller-signup" element={<New_Seller />} />
           <Route
             path="*"
             element={

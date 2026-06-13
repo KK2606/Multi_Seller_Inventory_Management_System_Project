@@ -73,7 +73,7 @@ function Seller_Portal() {
         apiError,
         "Failed to load seller dashboard"
       );
-      
+
       setSellerDashboard(null);
       setError(message);
       toast.error(message);
