@@ -1,6 +1,116 @@
 # Multi-Seller Inventory Management System
 
-A full-stack inventory management system that enables multiple sellers to manage their product inventory through a centralized platform. The system provides separate interfaces for administrators and sellers, with secure key-based authentication and comprehensive product management capabilities.
+![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat-square&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green?style=flat-square&logo=fastapi)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?style=flat-square&logo=postgresql)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-red?style=flat-square&logo=sqlalchemy)
+![Pydantic](https://img.shields.io/badge/Pydantic-2.0+-red?style=flat-square&logo=pydantic)
+![React](https://img.shields.io/badge/React-19.2.6-blue?style=flat-square&logo=react)
+![Vite](https://img.shields.io/badge/Vite-8.0.12-purple?style=flat-square&logo=vite)
+![Axios](https://img.shields.io/badge/Axios-1.16.1-green?style=flat-square&logo=axios)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow?style=flat-square&logo=javascript)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=flat-square)
+
+---
+
+## 🎯 Project Overview
+
+A production-ready full-stack inventory management system that enables multiple independent sellers to manage their product inventory through a centralized platform. This system provides separate, secure interfaces for administrators and sellers, implementing robust key-based authentication and comprehensive product management capabilities.
+
+### Key Highlights
+
+- **Multi-Tenant Architecture**: Support for multiple independent sellers with complete data isolation
+- **Role-Based Access Control**: Separate authentication flows for admins and sellers
+- **Real-Time Inventory Tracking**: Automatic stock status updates based on quantity
+- **Modern Tech Stack**: Built with FastAPI, React, PostgreSQL, and modern development tools
+- **Production-Ready**: Comprehensive error handling, validation, and security measures
+- **Scalable Design**: Layered architecture following software engineering best practices
+
+### Portfolio Worthiness
+
+This project demonstrates full-stack development proficiency with:
+- RESTful API design and implementation
+- Database modeling and ORM integration
+- Authentication and authorization patterns
+- Modern frontend development with React
+- Professional code organization and documentation
+- End-to-end system architecture understanding
+
+---
+
+## ✨ Features
+
+### Admin Features
+
+- **Admin Dashboard**: Comprehensive overview of all sellers and their products
+- **Seller Management**: View, update, and delete seller accounts
+- **Product Oversight**: Access to all products across the system
+- **System Statistics**: Real-time counts of total sellers and products
+- **Authentication**: Secure admin key-based access control
+- **Data Visibility**: Full access to seller keys and product details
+
+### Seller Features
+
+- **Seller Registration**: Self-service signup with business information
+- **Seller Dashboard**: Personalized interface for inventory management
+- **Product Management**: Full CRUD operations for own products
+- **Profile Updates**: Modify business information and authentication keys
+- **Statistics Tracking**: View personal inventory statistics
+- **Secure Access**: Key-based authentication protecting seller data
+
+### Inventory Features
+
+- **Product CRUD**: Complete create, read, update, delete operations
+- **Stock Management**: Automatic stock status (in stock/out of stock)
+- **Product Categorization**: Organize products by category
+- **Price Management**: Track and update product pricing
+- **Quantity Tracking**: Monitor stock levels in real-time
+- **Bulk Operations**: Efficient management of multiple products
+
+### Product Management Features
+
+- **Add Products**: Create new inventory items with validation
+- **Update Products**: Modify existing product details
+- **Delete Products**: Remove products with confirmation dialogs
+- **Product Search**: Find products by name, category, or other criteria
+- **Stock Alerts**: Visual indicators for stock availability
+- **Product Cards**: Modern card-based UI for product display
+
+### Search Features
+
+- **Multi-Criteria Search**: Filter by ID, name, category, price, stock status
+- **Real-Time Search**: Instant results as you type
+- **Seller-Based Search**: Find products by specific sellers
+- **Advanced Filtering**: Combine multiple search parameters
+- **Empty State Handling**: Clear messaging when no results found
+
+### Authentication Features
+
+- **Seller Key Authentication**: Unique alphanumeric keys (4-8 characters)
+- **Admin Key Authentication**: Separate admin access layer
+- **Header-Based Auth**: Secure HTTP header authentication
+- **Server-Side Validation**: Robust key validation before access
+- **Ownership Verification**: Sellers can only modify their own data
+- **Session Management**: Secure logout functionality
+
+### Dashboard Features
+
+- **Statistics Cards**: Visual display of key metrics
+- **Product Grids**: Organized product displays
+- **Seller Cards**: Comprehensive seller information
+- **Action Buttons**: Quick access to common operations
+- **Loading States**: Visual feedback during data fetching
+- **Empty States**: User-friendly messaging for no data scenarios
+
+### API Features
+
+- **RESTful Design**: Proper HTTP method usage and resource naming
+- **Pydantic Validation**: Request/response data validation
+- **Error Handling**: Comprehensive exception handling
+- **CORS Support**: Cross-origin resource sharing enabled
+- **Auto Documentation**: Swagger/OpenAPI integration
+- **Layered Architecture**: Separation of concerns for maintainability
 
 ## Overview
 
