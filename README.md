@@ -480,19 +480,20 @@ DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
 ### Frontend Screenshots
 
 ### Home Page
-*[Placeholder: Screenshot of the home page with feature cards and call-to-action]*
+![Home Page](frontend/images/homepage.png)
 
 ### Products Page
 ![Products Page](frontend/images/all_products_page.png)
 
 ### Seller Portal
-*[Placeholder: Screenshot of the seller dashboard with statistics and product grid]*
+![Seller Portal](frontend/images/seller_dahsboard.png)
+
 
 ### Admin Portal
-*[Placeholder: Screenshot of the admin dashboard with seller cards and product management]*
+![Admin Portal](frontend/images/admin_dahsboard.png)
 
 ### Add Product Form
-*[Placeholder: Screenshot of the add product form with validation]*
+![Add Product Form](frontend/images/add_product_form.png)
 
 ### Backend Screenshots
 
