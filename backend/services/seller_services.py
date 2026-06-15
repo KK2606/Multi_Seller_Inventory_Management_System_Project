@@ -73,37 +73,6 @@ def get_seller_with_their_products(
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------
 
-# Search Sellers: This function allows searching for sellers in the inventory system based on various criteria such as seller ID, name, and email. The function dynamically applies filters based on the provided search parameters and returns a list of matching sellers. If no sellers are found matching the search criteria, it raises an HTTP 404 Not Found exception.
-# TODO: Future updates may include additional search capabilities and more advanced filtering options to enhance the seller search functionality.
-
-
-def search_sellers(
-    db_session: Session,
-    Seller_ID: int = None,
-    Seller_Name: str = None,
-    Seller_Email: str = None,
-):  # Search sellers
-
-    query = db_session.query(Seller_database)
-
-    if Seller_ID is not None:
-        query = query.filter(Seller_database.seller_id == Seller_ID)
-
-    if Seller_Name is not None:
-        query = query.filter(Seller_database.seller_name == Seller_Name)
-
-    if Seller_Email is not None:
-        query = query.filter(Seller_database.seller_email == Seller_Email)
-
-    sellers = query.all()
-
-    if not sellers:
-        raise HTTPException(status_code=404, detail="Seller not found")
-
-    return sellers
-
-
-#-----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Add New Seller: This function allows new sellers to be added to the inventory system by providing their name, email, and a unique seller key. The function checks for duplicate email and seller key to maintain data integrity in the system before creating a new seller account.
 # TODO: Future updates may include additional validation rules and more advanced account creation capabilities to enhance the seller account management features.

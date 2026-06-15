@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Request
 
 from db.db_config import Session, get_db
 from schemas.seller_schema import (Add_Seller_Schema, Seller_Response_Schema,
                                    Update_Seller_Schema)
 from services.seller_services import (get_seller_with_their_products, delete_seller, new_seller,
-                                      search_sellers, update_seller)
+                                       update_seller)
+
+from core.rate_limiter import limiter
 
 seller_router = APIRouter(prefix="/seller", tags=["Seller Management"])
 
@@ -18,7 +20,9 @@ seller_router = APIRouter(prefix="/seller", tags=["Seller Management"])
 @seller_router.post(
     "/new-seller-signup"
 )  # Add New Seller
+@limiter.limit("3/minute")  # Rate limit: 3 requests per minute for this endpoint
 def new_seller_signup(
+    request: Request,
     add_seller_data: Add_Seller_Schema, db_session: Session = Depends(get_db)
 ):
     return new_seller(db_session, add_seller_data)
@@ -34,7 +38,9 @@ def new_seller_signup(
 @seller_router.get(
     "/seller-dashboard"
 )
+@limiter.limit("5/minute")  # Rate limit: 5 requests per minute for this endpoint
 def get_seller_dashboard(
+    request: Request,
     SELLER_KEY: str = Header(None),
     db_session: Session = Depends(get_db),
 ):
@@ -45,29 +51,6 @@ def get_seller_dashboard(
 
 # -----------------------------------------------------------------------------------------------------------------------------------------------
 
-# Search for sellers in the inventory management system
-# NOTE: This route allows users to search for sellers in the inventory management system by providing various search criteria, such as seller ID, name, or email. The route retrieves the seller data from the database and returns it in a structured format for easy consumption by clients or frontend applications.
-# TODO: Future updates may include additional features such as fuzzy search capabilities to enhance the search functionality and provide more relevant results based on partial matches or similar keywords.
-
-
-@seller_router.get(
-    "/search-seller", response_model=list[Seller_Response_Schema]
-)  # Search Sellers
-def search_seller_info(
-    SELLER_ID: int = None,
-    SELLER_NAME: str = None,
-    SELLER_EMAIL: str = None,
-    db_session: Session = Depends(get_db),
-):
-    return search_sellers(
-        db_session,
-        Seller_ID=SELLER_ID,
-        Seller_Name=SELLER_NAME,
-        Seller_Email=SELLER_EMAIL,
-    )
-
-
-# -----------------------------------------------------------------------------------------------------------------------------------------------
 
 # Update existing seller information in the inventory management system
 # NOTE: This route allows authorized users to update the information of existing sellers in the inventory management system by providing the seller ID, updated seller data, and their unique seller key for authentication. The route validates the input data and ensures that only authorized users can update seller information in the system.
@@ -77,7 +60,9 @@ def search_seller_info(
 @seller_router.put(
     "/update-seller"
 )  # Update Existing Sellers
+@limiter.limit("5/minute")  # Rate limit: 5 requests per minute for this endpoint
 def update_existing_seller(
+    request: Request,
     update_seller_data: Update_Seller_Schema,
     SELLER_ID: int,
     SELLER_KEY: str = Header(None),
@@ -99,7 +84,9 @@ def update_existing_seller(
 
 
 @seller_router.delete("/delete-seller")
+@limiter.limit("5/minute")  # Rate limit: 5 requests per minute for this endpoint
 def delete_existing_seller(
+    request: Request,
     DEL_ID: int = None,
     SELLER_KEY: str = Header(None),
     db_session: Session = Depends(get_db),

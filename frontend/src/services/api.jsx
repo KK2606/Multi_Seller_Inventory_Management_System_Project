@@ -1,9 +1,29 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const api = axios.create({
   baseURL: "http://127.0.0.1:8000",
   timeout: 15000,
 });
+
+api.interceptors.response.use(
+  (response) => response,
+
+  (error) => {
+
+    if (
+      error.response?.status === 429 ||
+      error.response?.data?.error === "RATE_LIMIT_EXCEEDED"
+    ) {
+      toast.error(
+        error.response?.data?.message ||
+        "Too many requests. Please try again later."
+      );
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export function asArray(value) {
   return Array.isArray(value) ? value : [];

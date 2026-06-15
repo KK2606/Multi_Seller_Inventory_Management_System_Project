@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Request
 
 from db.db_config import Session, get_db
 from schemas.inventory_schema import (Add_Inventory_Schema,
@@ -8,6 +8,8 @@ from schemas.inventory_schema import (Add_Inventory_Schema,
 from services.inventory_services import (add_product, all_products,
                                          delete_product, search_products,
                                          update_product)
+
+from core.rate_limiter import limiter
 
 inventory_router = APIRouter(prefix="/inventory", tags=["Inventory Management"])
 
@@ -22,8 +24,8 @@ inventory_router = APIRouter(prefix="/inventory", tags=["Inventory Management"])
     response_model=list[Inventory_Response_Schema],
     summary="Show all products in the inventory system",
 )
-def show_all_items(db_session: Session = Depends(get_db)):
-
+@limiter.limit("50/minute")  # Rate limit: 50 requests per minute for this endpoint
+def show_all_items(request: Request, db_session: Session = Depends(get_db)):
     return all_products(db_session=db_session)
 
 
@@ -39,7 +41,9 @@ def show_all_items(db_session: Session = Depends(get_db)):
     response_model=list[Inventory_with_Seller_Schema],
     summary="Search for products",
 )
+@limiter.limit("50/minute")  # Rate limit: 50 requests per minute for this endpoint
 def search_item(
+    request: Request,
     ITEM_ID: int = None,
     ITEM_NAME: str = None,
     ITEM_CATEGORY: str = None,
@@ -71,7 +75,9 @@ def search_item(
 @inventory_router.post(
     "/add-product", response_model=Inventory_Response_Schema, summary="Add new product"
 )
+@limiter.limit("20/minute")  # Rate limit: 20 requests per minute for this endpoint
 def add_new_item(
+    request: Request,
     add_item_data: Add_Inventory_Schema,
     SELLER_KEY: str = Header(None),
     db_session: Session = Depends(get_db),
@@ -92,7 +98,9 @@ def add_new_item(
     response_model=Inventory_Response_Schema,
     summary="Update existing product",
 )
+@limiter.limit("20/minute")  # Rate limit: 20 requests per minute for this endpoint
 def update_existing_item(
+    request: Request,
     update_item_data: Update_Inventory_Schema,
     ITEM_ID: int,
     SELLER_KEY: str = Header(None),
@@ -116,7 +124,9 @@ def update_existing_item(
 @inventory_router.delete(
     "/delete-product", summary="Delete existing product"
 )  # Delete Existing Product
+@limiter.limit("20/minute")  # Rate limit: 20 requests per minute for this endpoint
 def delete_existing_item(
+    request: Request,
     DEL_ID: int = None,
     SELLER_KEY: str = Header(None),
     db_session: Session = Depends(get_db),

@@ -273,7 +273,6 @@ seller_id (FK, Integer)      # Foreign key referencing sellers.seller_id
 | DELETE | `/inventory/delete-product` | Delete a product from inventory | Seller Key |
 | POST | `/seller/new-seller-signup` | Register a new seller | None |
 | GET | `/seller/seller-dashboard` | Get seller's products | Seller Key |
-| GET | `/seller/search-seller` | Search sellers by criteria | None |
 | PUT | `/seller/update-seller` | Update seller information | Seller Key |
 | DELETE | `/seller/delete-seller` | Delete a seller from system | Seller Key |
 | GET | `/admin/admin_dashboard` | Get all sellers with products | Admin Key |
