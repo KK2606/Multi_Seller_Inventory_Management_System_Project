@@ -1,0 +1,16 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+backend/v_env/
+
+# Cache
+.mypy_cache/
+.ruff_cache/
+
+# VSCode
+.vscode/

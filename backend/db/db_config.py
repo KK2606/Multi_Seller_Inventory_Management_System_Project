@@ -1,10 +1,13 @@
 # Database configuration file for the Inventory Management System backend service.
 # This file sets up the connection to the PostgreSQL database using SQLAlchemy, defines the Base class for ORM models, and provides a dependency function to get a database session for each request.
-
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
-DATABASE_URL = "postgresql://postgres:1234@localhost:5432/Inventory_Management_System"  # Database URL → connects Python to PostgreSQL
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")  # Database URL → connects Python to PostgreSQL
 # SYNTAX → "postgresql://username:password@localhost:port_number/database_name"
 
 engine = create_engine(DATABASE_URL)
