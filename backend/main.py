@@ -1,6 +1,9 @@
 # Main application file for Inventory Management System Backend Service
 # NOTE: This file serves as the entry point for the FastAPI application, where all routes and database configurations are set up. It includes the necessary imports, initializes the FastAPI app, creates database tables, and includes routers for admin, inventory, and seller functionalities. Future updates may include additional middleware for logging, error handling, and security enhancements to further improve the robustness of the application.
 
+import os
+
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -8,12 +11,12 @@ from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-
 from core.rate_limiter import limiter, custom_rate_limit_handler
 from db.db_config import Base, engine
 from routes.admin_routes import admin_router
 from routes.inventory_routes import inventory_router
 from routes.seller_routes import seller_router
+from scripts.seed_database import seed_database
 
 app = FastAPI()
 
@@ -24,6 +27,8 @@ app.add_exception_handler(RateLimitExceeded, custom_rate_limit_handler)
 app.add_middleware(SlowAPIMiddleware)
 
 Base.metadata.create_all(bind=engine)
+
+seed_database()
 
 app.add_middleware(
     CORSMiddleware,
@@ -54,4 +59,6 @@ app.include_router(seller_router)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 
-app.mount("/", StaticFiles(directory="static", html=True), name="frontend")
+# app.mount("/", StaticFiles(directory="static", html=True), name="frontend")
+if os.getenv("RUNNING_IN_DOCKER") == "true":
+    app.mount("/", StaticFiles(directory="static", html=True), name="frontend")

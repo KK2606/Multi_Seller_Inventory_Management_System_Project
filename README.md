@@ -218,6 +218,7 @@ Inventory_System_v2/
 |   |   |-- seller_services.py
 |   |   `-- validators.py
 |   |-- scripts/
+|   |   |-- seed_database.py
 |   |   |-- csvdata_inventory_import.py
 |   |   `-- csvdata_seller_import.py
 |   |-- sample_data/
@@ -287,7 +288,7 @@ DATABASE_URL=postgresql://username:password@localhost:5432/database_name
 ADMIN_KEY=your-admin-key
 ```
 
-Create the PostgreSQL database named in `DATABASE_URL`. The FastAPI app creates the `sellers` and `inventory` tables on startup.
+Create the PostgreSQL database named in `DATABASE_URL`. The FastAPI app creates the `sellers` and `inventory` tables on startup and will automatically fill them with data from `sample_data/_seller_data.csv` and `sample_data/_inventory_data.csv` when backend is started.
 
 Start the backend.
 

@@ -1,49 +1,62 @@
-# NOTE: This script imports inventory data from a CSV file into the database using SQLAlchemy ORM. It should be run after importing seller data from CSV as inventory items require valid seller IDs to be added to the database.
+# NOTE: This script imports inventory data from a CSV file into the database using SQLAlchemy ORM.
+# It should be run after importing seller data.
 
 import csv
+from pathlib import Path
 
 from db.db_config import local_session
 from models.db_inventory import Inventory_database
 
-ls = local_session()
 
+def import_inventory_csv():
 
-with open("sample_data\\_inventory_data.csv", encoding="utf-8-sig") as file:
+    csv_path = (
+        Path(__file__).resolve().parent.parent
+        / "sample_data"
+        / "_inventory_data.csv"
+    )
 
-    reader = csv.DictReader(file)
+    ls = local_session()
 
-    print(reader.fieldnames)
+    try:
 
-    for row in reader:
+        with open(csv_path, encoding="utf-8-sig") as file:
 
-        existing_item = (
-            ls.query(Inventory_database)
-            .filter(
-                Inventory_database.item_name == row["item_name"],
-                Inventory_database.item_description == row["item_description"],
-                Inventory_database.seller_id == int(row["seller_id"]),
-            )
-            .first()
-        )
+            reader = csv.DictReader(file)
 
-        if existing_item:
-            print(f"{row["item_name"]} already exists")
-            continue
+            print(reader.fieldnames)
 
-        item = Inventory_database(
-            item_name=row["item_name"],
-            item_description=row["item_description"],
-            item_category=row["item_category"],
-            item_price=float(row["item_price"]),
-            item_stock_qty=int(row["item_stock_qty"]),
-            in_stock=row["in_stock"].strip().lower() == "true",
-            seller_id=int(row["seller_id"]),
-        )
+            for row in reader:
 
-        ls.add(item)
+                existing_item = (
+                    ls.query(Inventory_database)
+                    .filter(
+                        Inventory_database.item_name == row["item_name"],
+                        Inventory_database.item_description == row["item_description"],
+                        Inventory_database.seller_id == int(row["seller_id"]),
+                    )
+                    .first()
+                )
 
-    ls.commit()
+                if existing_item:
+                    print(f"{row['item_name']} already exists")
+                    continue
 
-    ls.close()
+                item = Inventory_database(
+                    item_name=row["item_name"],
+                    item_description=row["item_description"],
+                    item_category=row["item_category"],
+                    item_price=float(row["item_price"]),
+                    item_stock_qty=int(row["item_stock_qty"]),
+                    in_stock=row["in_stock"].strip().lower() == "true",
+                    seller_id=int(row["seller_id"]),
+                )
 
-    print("Inventory CSV data imported successfully!")
+                ls.add(item)
+
+        ls.commit()
+
+        print("Inventory CSV data imported successfully!")
+
+    finally:
+        ls.close()

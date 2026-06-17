@@ -19,6 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend .
 
+COPY backend/.env.docker .env
+
 # Copy React build into backend
 COPY --from=frontend /frontend/dist ./static
 
