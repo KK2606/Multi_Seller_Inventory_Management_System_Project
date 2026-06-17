@@ -58,6 +58,5 @@ app.include_router(seller_router)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 
-# app.mount("/", StaticFiles(directory="static", html=True), name="frontend")
 if os.getenv("RUNNING_IN_DOCKER") == "true":
     app.mount("/", StaticFiles(directory="static", html=True), name="frontend")
