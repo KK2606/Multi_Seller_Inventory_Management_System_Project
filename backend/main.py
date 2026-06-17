@@ -3,6 +3,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -53,3 +54,4 @@ app.include_router(seller_router)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 
+app.mount("/", StaticFiles(directory="static", html=True), name="frontend")

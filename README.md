@@ -1,509 +1,406 @@
 # Multi-Seller Inventory Management System
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat-square&logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green?style=flat-square&logo=fastapi)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?style=flat-square&logo=postgresql)
-![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-red?style=flat-square&logo=sqlalchemy)
-![Pydantic](https://img.shields.io/badge/Pydantic-2.0+-red?style=flat-square&logo=pydantic)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.136.3-green?style=flat-square&logo=fastapi)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-supported-blue?style=flat-square&logo=postgresql)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.50-red?style=flat-square&logo=sqlalchemy)
+![Pydantic](https://img.shields.io/badge/Pydantic-2.13.4-red?style=flat-square&logo=pydantic)
 ![React](https://img.shields.io/badge/React-19.2.6-blue?style=flat-square&logo=react)
 ![Vite](https://img.shields.io/badge/Vite-8.0.12-purple?style=flat-square&logo=vite)
 ![Axios](https://img.shields.io/badge/Axios-1.16.1-green?style=flat-square&logo=axios)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow?style=flat-square&logo=javascript)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=flat-square)
+![React Hot Toast](https://img.shields.io/badge/React%20Hot%20Toast-2.6.0-blue?style=flat-square&logo=react-hot-toast)
+![React Router](https://img.shields.io/badge/React%20Router-7.16.0-blue?style=flat-square&logo=react-router)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES6-blue?style=flat-square&logo=javascript)
+![Docker](https://img.shields.io/badge/Dockerfile-present-blue?style=flat-square&logo=docker)
 
----
+## Project Overview
 
-## 🎯 Project Overview
+This repository contains a FastAPI backend and a Vite React frontend for a multi-seller inventory management system. Sellers register with a business name, email address, and seller key, then use that key to manage their own products. Admin access uses a separate admin key to load all sellers and their product lists.
 
-A production-ready full-stack inventory management system that enables multiple independent sellers to manage their product inventory through a centralized platform. This system provides separate, secure interfaces for administrators and sellers, implementing robust key-based authentication and comprehensive product management capabilities.
-
-### Key Highlights
-
-- **Multi-Tenant Architecture**: Support for multiple independent sellers with complete data isolation
-- **Role-Based Access Control**: Separate authentication flows for admins and sellers
-- **Real-Time Inventory Tracking**: Automatic stock status updates based on quantity
-- **Modern Tech Stack**: Built with FastAPI, React, PostgreSQL, and modern development tools
-- **Production-Ready**: Comprehensive error handling, validation, and security measures
-- **Scalable Design**: Layered architecture following software engineering best practices
-
-### Portfolio Worthiness
-
-This project demonstrates full-stack development proficiency with:
-- RESTful API design and implementation
-- Database modeling and ORM integration
-- Authentication and authorization patterns
-- Modern frontend development with React
-- Professional code organization and documentation
-- End-to-end system architecture understanding
-
----
-
-## ✨ Features
-
-### Admin Features
-
-- **Admin Dashboard**: Comprehensive overview of all sellers and their products
-- **Seller Management**: View, update, and delete seller accounts
-- **Product Oversight**: Access to all products across the system
-- **System Statistics**: Real-time counts of total sellers and products
-- **Authentication**: Secure admin key-based access control
-- **Data Visibility**: Full access to seller keys and product details
-
-### Seller Features
-
-- **Seller Registration**: Self-service signup with business information
-- **Seller Dashboard**: Personalized interface for inventory management
-- **Product Management**: Full CRUD operations for own products
-- **Profile Updates**: Modify business information and authentication keys
-- **Statistics Tracking**: View personal inventory statistics
-- **Secure Access**: Key-based authentication protecting seller data
-
-### Inventory Features
-
-- **Product CRUD**: Complete create, read, update, delete operations
-- **Stock Management**: Automatic stock status (in stock/out of stock)
-- **Product Categorization**: Organize products by category
-- **Price Management**: Track and update product pricing
-- **Quantity Tracking**: Monitor stock levels in real-time
-- **Bulk Operations**: Efficient management of multiple products
-
-### Product Management Features
-
-- **Add Products**: Create new inventory items with validation
-- **Update Products**: Modify existing product details
-- **Delete Products**: Remove products with confirmation dialogs
-- **Product Search**: Find products by name, category, or other criteria
-- **Stock Alerts**: Visual indicators for stock availability
-- **Product Cards**: Modern card-based UI for product display
-
-### Search Features
-
-- **Multi-Criteria Search**: Filter by ID, name, category, price, stock status
-- **Real-Time Search**: Instant results as you type
-- **Seller-Based Search**: Find products by specific sellers
-- **Advanced Filtering**: Combine multiple search parameters
-- **Empty State Handling**: Clear messaging when no results found
-
-### Authentication Features
-
-- **Seller Key Authentication**: Unique alphanumeric keys (4-8 characters)
-- **Admin Key Authentication**: Separate admin access layer
-- **Header-Based Auth**: Secure HTTP header authentication
-- **Server-Side Validation**: Robust key validation before access
-- **Ownership Verification**: Sellers can only modify their own data
-- **Session Management**: Secure logout functionality
-
-### Dashboard Features
-
-- **Statistics Cards**: Visual display of key metrics
-- **Product Grids**: Organized product displays
-- **Seller Cards**: Comprehensive seller information
-- **Action Buttons**: Quick access to common operations
-- **Loading States**: Visual feedback during data fetching
-- **Empty States**: User-friendly messaging for no data scenarios
-
-### API Features
-
-- **RESTful Design**: Proper HTTP method usage and resource naming
-- **Pydantic Validation**: Request/response data validation
-- **Error Handling**: Comprehensive exception handling
-- **CORS Support**: Cross-origin resource sharing enabled
-- **Auto Documentation**: Swagger/OpenAPI integration
-- **Layered Architecture**: Separation of concerns for maintainability
-
-## Overview
-
-This project addresses the challenge of inventory management for multiple independent sellers by providing a unified platform where each seller can independently manage their product catalog while administrators maintain oversight of the entire system. The solution separates concerns between sellers (who manage their own inventory) and administrators (who oversee all sellers and products), ensuring data isolation and security through unique authentication keys.
+The backend persists data in PostgreSQL through SQLAlchemy models, validates request bodies with Pydantic schemas, applies SlowAPI rate limits on route handlers, enables CORS for all origins, and exposes FastAPI's default Swagger UI. The frontend is a React single-page app with pages for products, seller registration, seller dashboard, admin dashboard, and create/update forms.
 
 ## Features
 
-### Seller Management
-- **Seller Registration**: New sellers can sign up with business name, email, and unique seller key
-- **Seller Dashboard**: Dedicated interface for sellers to view and manage their products
-- **Seller Profile Updates**: Sellers can update their business information and authentication keys
-- **Seller Search**: Search functionality to find sellers by ID, name, or email
-- **Seller Deletion**: Admin capability to remove sellers from the system
+### Seller Features
 
-### Inventory Management
-- **Product CRUD Operations**: Complete create, read, update, delete functionality for products
-- **Product Search**: Advanced search by product ID, name, category, price, stock status, and seller
-- **Stock Management**: Automatic stock status tracking (in stock/out of stock based on quantity)
-- **Product Categories**: Categorization system for better product organization
-- **Bulk Operations**: Support for managing multiple products efficiently
+- Register a seller with `add_seller_name`, `add_seller_email`, and `add_seller_key`.
+- Load a seller dashboard with the `SELLER-KEY` request header.
+- View the authenticated seller profile and owned products.
+- Add, update, and delete products owned by the authenticated seller.
+- Update seller name, email, or key.
+- Delete a seller profile only after all owned products have been deleted.
 
-### Admin Dashboard
-- **System Overview**: View all sellers and their associated products in one dashboard
-- **Statistics**: Real-time counts of total sellers and products
-- **Seller Management**: Full control over seller accounts including updates and deletions
-- **Product Oversight**: Ability to view and manage any product in the system
+### Admin Features
 
-### Authentication & Security
-- **Seller Key Authentication**: Unique alphanumeric keys for seller identification and authorization
-- **Admin Key Authentication**: Separate authentication layer for administrative access
-- **Header-Based Auth**: Secure authentication via HTTP headers
-- **Key Validation**: Server-side validation of authentication keys before granting access
+- Load all sellers and their products with the `Admin-Key` request header.
+- View seller IDs, names, emails, seller keys, and product summaries.
+- See dashboard totals for sellers, products, and visible search results in the frontend.
+- Search loaded dashboard data in the frontend.
+- Use seller-key-protected product and seller actions from the admin portal.
 
-### User Experience
-- **Responsive Design**: Mobile-friendly interface that works across all devices
-- **Real-time Feedback**: Toast notifications for all user actions
-- **Loading States**: Visual feedback during data fetching and processing
-- **Error Handling**: Comprehensive error messages and validation feedback
-- **Empty States**: Clear messaging when no data is available
+### Inventory Features
+
+- List all products.
+- Search products by exact query-parameter matches.
+- Add products with name, description, category, price, and stock quantity.
+- Update product fields individually by sending nullable update fields.
+- Delete products by item ID.
+- Automatically set `in_stock` from stock quantity when products are added or updated.
+- Validate that product price is greater than zero and stock quantity is not negative.
+
+### Frontend Features
+
+- React Router routes for home, products, seller portal, admin portal, seller signup, product creation, product update, and seller update.
+- Axios API client configured with `http://127.0.0.1:8000`.
+- React Hot Toast notifications for user actions and API errors.
+- Seller key state stored with React Context.
+- Responsive tables, form components, loading states, empty states, and error states.
 
 ## Technology Stack
 
 ### Backend
-- **FastAPI**: Modern, fast web framework for building APIs with Python
-- **SQLAlchemy ORM**: Python SQL toolkit and ORM for database operations
-- **PostgreSQL**: Relational database for persistent data storage
-- **Pydantic**: Data validation using Python type annotations
-- **Uvicorn**: ASGI server for running FastAPI applications
+
+- FastAPI
+- Uvicorn
+- SQLAlchemy
+- PostgreSQL through `psycopg2`
+- Pydantic and `email-validator`
+- `python-dotenv`
+- SlowAPI
 
 ### Frontend
-- **React 19**: Modern JavaScript library for building user interfaces
-- **Vite**: Next-generation frontend tooling for fast development
-- **Axios**: Promise-based HTTP client for API communication
-- **React Router DOM**: Client-side routing for single-page applications
-- **React Hot Toast**: Beautiful toast notifications for user feedback
-- **Redux Toolkit**: State management for complex application state
-- **Bootstrap 5**: CSS framework for responsive design
+
+- React
+- Vite
+- React Router DOM
+- Axios
+- React Hot Toast
+- React Context for seller-key state
+
+`package.json` also includes Bootstrap, Redux Toolkit, and React Redux dependencies, but the current frontend source does not import Bootstrap or configure a Redux store.
 
 ## System Architecture
 
-### Backend Architecture
-The backend follows a layered architecture pattern:
+### Backend
 
-```
-┌─────────────────────────────────────┐
-│         FastAPI Application         │
-│  (main.py - Entry Point)            │
-└──────────────┬──────────────────────┘
-               │
-       ┌───────┴────────┐
-       │                │
-┌──────▼──────┐  ┌─────▼──────┐
-│   Routes    │  │   Models   │
-│  (API Layer)│  │  (ORM)     │
-└──────┬──────┘  └─────┬──────┘
-       │                │
-┌──────▼────────────────▼──────┐
-│         Services              │
-│   (Business Logic Layer)      │
-└──────┬───────────────────────┘
-       │
-┌──────▼───────────────────────┐
-│         Database              │
-│   (PostgreSQL via SQLAlchemy) │
-└──────────────────────────────┘
+The backend is organized around FastAPI route modules, service modules, Pydantic schemas, SQLAlchemy models, and a shared database session dependency.
+
+```text
+FastAPI app (backend/main.py)
+  -> routers (backend/routes/)
+  -> services (backend/services/)
+  -> schemas (backend/schemas/)
+  -> models (backend/models/)
+  -> PostgreSQL connection/session (backend/db/db_config.py)
 ```
 
-### Frontend Architecture
-The frontend follows a component-based architecture:
+At startup, `backend/main.py` creates database tables with `Base.metadata.create_all(bind=engine)`, registers the admin, inventory, and seller routers, installs SlowAPI middleware, enables CORS, and mounts `StaticFiles(directory="static", html=True)` at `/` for the Docker-built frontend.
 
-```
-┌─────────────────────────────────────┐
-│         React Application           │
-│  (App.jsx - Root Component)         │
-└──────────────┬──────────────────────┘
-               │
-       ┌───────┴────────┐
-       │                │
-┌──────▼──────┐  ┌─────▼──────┐
-│   Pages     │  │ Components │
-│  (Routes)   │  │  (Reusable) │
-└──────┬──────┘  └─────┬──────┘
-       │                │
-┌──────▼────────────────▼──────┐
-│         Services              │
-│   (API Calls via Axios)      │
-└──────┬───────────────────────┘
-       │
-┌──────▼───────────────────────┐
-│         Context/Redux        │
-│   (State Management)         │
-└──────────────────────────────┘
-```
+### Frontend
 
-### API Flow
-1. **Frontend Request**: React component triggers API call via Axios
-2. **Route Handler**: FastAPI route receives request and validates authentication
-3. **Service Layer**: Business logic is executed in service functions
-4. **Database Query**: SQLAlchemy ORM queries PostgreSQL database
-5. **Response Processing**: Pydantic schemas validate and format response data
-6. **Frontend Update**: React component updates state with response data
+The frontend is a Vite React app. `frontend/src/App.jsx` defines the browser routes, `frontend/src/services/api.jsx` centralizes Axios behavior, `frontend/src/context/Seller_Context.jsx` stores the seller key, and page/components files implement the UI workflows.
 
 ## Database Design
 
-### Entities and Relationships
+### `sellers`
 
-#### Sellers Table
-```python
-seller_id (PK, Integer)      # Unique identifier for each seller
-seller_name (String)         # Business name of the seller
-seller_email (String)         # Unique email address for seller
-seller_key (String)          # Unique authentication key (4-8 alphanumeric chars)
-```
+| Column         | Type    | Notes                |
+| -------------- | ------- | -------------------- |
+| `seller_id`    | Integer | Primary key, indexed |
+| `seller_name`  | String  | Required             |
+| `seller_email` | String  | Required, unique     |
+| `seller_key`   | String  | Required, unique     |
 
-#### Inventory Table
-```python
-item_id (PK, Integer)        # Unique identifier for each product
-item_name (String)           # Product name
-item_description (String)    # Product description
-item_category (String)       # Product category
-item_price (Float)           # Product price
-item_stock_qty (Integer)     # Available stock quantity
-in_stock (Boolean)           # Stock availability status
-seller_id (FK, Integer)      # Foreign key referencing sellers.seller_id
-```
+### `inventory`
 
-### Relationship
-- **One-to-Many**: One seller can have multiple products
-- **Foreign Key**: `inventory.seller_id` references `sellers.seller_id`
-- **Cascade**: Products are deleted when their associated seller is deleted
+| Column             | Type    | Notes                              |
+| ------------------ | ------- | ---------------------------------- |
+| `item_id`          | Integer | Primary key, indexed               |
+| `item_name`        | String  | Required                           |
+| `item_description` | String  | Required                           |
+| `item_category`    | String  | Required                           |
+| `item_price`       | Float   | Required                           |
+| `item_stock_qty`   | Integer | Required, default `0`              |
+| `in_stock`         | Boolean | Required, default `False`          |
+| `seller_id`        | Integer | Foreign key to `sellers.seller_id` |
+
+One seller can own multiple inventory items through `inventory.seller_id`. The current service logic blocks seller deletion when that seller still owns inventory items; no cascade delete is configured in the SQLAlchemy model.
+
+## Environment Configuration
+
+Backend configuration is loaded from environment variables with `python-dotenv`.
+
+| Variable       | Used by                                                     | Purpose                                                           |
+| -------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- |
+| `DATABASE_URL` | `backend/db/db_config.py`                                   | PostgreSQL connection string passed to SQLAlchemy `create_engine` |
+| `ADMIN_KEY`    | `backend/config.py` and `backend/services/auth_services.py` | Value expected in the `Admin-Key` header                          |
+
+`backend/.env.example` contains the expected variable names. The frontend currently does not read a Vite environment variable for the API URL; Axios uses `http://127.0.0.1:8000` directly.
 
 ## API Endpoints
 
-| Method | Route | Purpose | Authentication |
-|--------|-------|---------|----------------|
-| GET | `/inventory/show-all-products` | Retrieve all products in the system | None |
-| GET | `/inventory/search-products` | Search products by various criteria | None |
-| POST | `/inventory/add-product` | Add a new product to inventory | Seller Key |
-| PUT | `/inventory/update-product` | Update an existing product | Seller Key |
-| DELETE | `/inventory/delete-product` | Delete a product from inventory | Seller Key |
-| POST | `/seller/new-seller-signup` | Register a new seller | None |
-| GET | `/seller/seller-dashboard` | Get seller's products | Seller Key |
-| PUT | `/seller/update-seller` | Update seller information | Seller Key |
-| DELETE | `/seller/delete-seller` | Delete a seller from system | Seller Key |
-| GET | `/admin/admin_dashboard` | Get all sellers with products | Admin Key |
+FastAPI's default API documentation is available at `/docs` when the backend is running.
+
+| Method   | Route                          | Query Parameters                                                                              | Body                                                                                                           | Authentication      | Rate Limit  |
+| -------- | ------------------------------ | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- |
+| `GET`    | `/inventory/show-all-products` | None                                                                                          | None                                                                                                           | None                | `50/minute` |
+| `GET`    | `/inventory/search-products`   | `ITEM_ID`, `ITEM_NAME`, `ITEM_CATEGORY`, `ITEM_PRICE`, `IN_STOCK`, `SELLER_ID`, `SELLER_NAME` | None                                                                                                           | None                | `50/minute` |
+| `POST`   | `/inventory/add-product`       | None                                                                                          | `add_item_name`, `add_item_description`, `add_item_category`, `add_item_price`, `add_stock_qty`                | `SELLER-KEY` header | `20/minute` |
+| `PUT`    | `/inventory/update-product`    | `ITEM_ID`                                                                                     | `update_item_name`, `update_item_description`, `update_item_category`, `update_item_price`, `update_stock_qty` | `SELLER-KEY` header | `20/minute` |
+| `DELETE` | `/inventory/delete-product`    | `DEL_ID`                                                                                      | None                                                                                                           | `SELLER-KEY` header | `20/minute` |
+| `POST`   | `/seller/new-seller-signup`    | None                                                                                          | `add_seller_name`, `add_seller_email`, `add_seller_key`                                                        | None                | `3/minute`  |
+| `GET`    | `/seller/seller-dashboard`     | None                                                                                          | None                                                                                                           | `SELLER-KEY` header | `5/minute`  |
+| `PUT`    | `/seller/update-seller`        | `SELLER_ID`                                                                                   | `update_seller_name`, `update_seller_email`, `update_seller_key`                                               | `SELLER-KEY` header | `5/minute`  |
+| `DELETE` | `/seller/delete-seller`        | `DEL_ID`                                                                                      | None                                                                                                           | `SELLER-KEY` header | `5/minute`  |
+| `GET`    | `/admin/admin_dashboard`       | None                                                                                          | None                                                                                                           | `Admin-Key` header  | `5/minute`  |
+
+Search filters are exact matches in the backend service. If no product matches a search, the service raises `404` with `detail="Item not found"`.
+
+## Validation and Security Notes
+
+- Seller authentication checks the `SELLER-KEY` header against `sellers.seller_key`.
+- Admin authentication checks the `Admin-Key` header against the `ADMIN_KEY` environment variable.
+- Seller keys are validated by Pydantic on create/update as 4 to 8 alphanumeric characters.
+- Seller emails are validated with Pydantic `EmailStr`.
+- Duplicate seller email and seller key checks are performed in service logic.
+- Product ownership is checked before product update/delete.
+- Seller ownership is checked before seller update/delete.
+- Product price must be greater than zero.
+- Product stock quantity must be zero or greater.
+- Rate-limited requests return HTTP `429` with `error: "RATE_LIMIT_EXCEEDED"`.
+- CORS is configured with `allow_origins=["*"]`, `allow_methods=["*"]`, and `allow_headers=["*"]`.
+- Seller keys and the admin key are plain key values; the current backend does not implement passwords, JWTs, hashing, or sessions.
+
+## Frontend Routes
+
+| Route                      | Component        | Purpose                                                                          |
+| -------------------------- | ---------------- | -------------------------------------------------------------------------------- |
+| `/`                        | `Home`           | Landing page for the app                                                         |
+| `/products`                | `Products`       | Browse products, search by product name, and start product update/delete actions |
+| `/seller-portal`           | `Seller_Portal`  | Load seller dashboard with a seller key and manage owned products/profile        |
+| `/admin-portal`            | `Admin_Portal`   | Load all sellers and product summaries with the admin key                        |
+| `/add-product`             | `Add_Product`    | Create a product with a seller key                                               |
+| `/update-product/:id`      | `Update_Product` | Update a product by item ID with a seller key                                    |
+| `/update-seller/:sellerId` | `Update_Seller`  | Update seller fields by seller ID with the current seller key                    |
+| `/new-seller-signup`       | `New_Seller`     | Create a new seller                                                              |
 
 ## Project Structure
 
-```
+```text
 Inventory_System_v2/
-├── backend/
-│   ├── db/
-│   │   ├── db_config.py          # Database configuration and session management
-│   │   └── db_inventory.py       # Inventory table creation script
-│   ├── models/
-│   │   ├── db_seller.py          # Seller ORM model
-│   │   └── db_inventory.py       # Inventory ORM model
-│   ├── routes/
-│   │   ├── admin_routes.py       # Admin API endpoints
-│   │   ├── inventory_routes.py   # Inventory API endpoints
-│   │   └── seller_routes.py     # Seller API endpoints
-│   ├── schemas/
-│   │   ├── admin_schema.py       # Admin response validation schemas
-│   │   ├── inventory_schema.py   # Inventory validation schemas
-│   │   └── seller_schema.py     # Seller validation schemas
-│   ├── services/
-│   │   ├── admin_service.py      # Admin business logic
-│   │   ├── auth_services.py      # Authentication services
-│   │   ├── inventory_services.py # Inventory business logic
-│   │   ├── seller_services.py    # Seller business logic
-│   │   └── validators.py         # Input validation utilities
-│   ├── config.py                 # Application configuration
-│   ├── main.py                   # FastAPI application entry point
-│   └── requirements.txt           # Python dependencies
-├── frontend/
-│   ├── public/                   # Static assets
-│   ├── src/
-│   │   ├── components/           # Reusable React components
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── Product_Card.jsx
-│   │   │   ├── Product_Table.jsx
-│   │   │   ├── Seller_Card.jsx
-│   │   │   └── ...
-│   │   ├── context/              # React Context providers
-│   │   │   └── Seller_Context.jsx
-│   │   ├── pages/                # Page components
-│   │   │   ├── Home.jsx
-│   │   │   ├── Products.jsx
-│   │   │   ├── Add_Product.jsx
-│   │   │   ├── Update_Product.jsx
-│   │   │   ├── Seller_Portal.jsx
-│   │   │   ├── Admin_Portal.jsx
-│   │   │   ├── Update_Seller.jsx
-│   │   │   └── New_Seller.jsx
-│   │   ├── services/             # API service layer
-│   │   │   └── api.jsx
-│   │   ├── styles/               # CSS modules
-│   │   │   ├── HomeNew.module.css
-│   │   │   ├── NavbarNew.module.css
-│   │   │   ├── ProductsNew.module.css
-│   │   │   ├── FormNew.module.css
-│   │   │   ├── SellerPortal.module.css
-│   │   │   └── AdminPortalNew.module.css
-│   │   ├── App.jsx               # Main app component with routing
-│   │   ├── main.jsx              # Application entry point
-│   │   └── index.css             # Global styles
-│   ├── .env                      # Environment variables
-│   ├── .env.example              # Environment variables template
-│   ├── package.json              # Node.js dependencies
-│   └── vite.config.js            # Vite configuration
-└── README.md                     # Project documentation
+|-- .dockerignore
+|-- Dockerfile
+|-- README.md
+|-- backend/
+|   |-- .env.example
+|   |-- config.py
+|   |-- main.py
+|   |-- requirements.txt
+|   |-- core/
+|   |   `-- rate_limiter.py
+|   |-- db/
+|   |   `-- db_config.py
+|   |-- models/
+|   |   |-- db_inventory.py
+|   |   `-- db_seller.py
+|   |-- routes/
+|   |   |-- admin_routes.py
+|   |   |-- inventory_routes.py
+|   |   `-- seller_routes.py
+|   |-- schemas/
+|   |   |-- admin_schema.py
+|   |   |-- inventory_schema.py
+|   |   `-- seller_schema.py
+|   |-- services/
+|   |   |-- admin_service.py
+|   |   |-- auth_services.py
+|   |   |-- inventory_services.py
+|   |   |-- seller_services.py
+|   |   `-- validators.py
+|   |-- scripts/
+|   |   |-- csvdata_inventory_import.py
+|   |   `-- csvdata_seller_import.py
+|   |-- sample_data/
+|   |   |-- _inventory_data.csv
+|   |   `-- _seller_data.csv
+|   `-- images/
+`-- frontend/
+    |-- index.html
+    |-- package.json
+    |-- package-lock.json
+    |-- vite.config.js
+    |-- eslint.config.js
+    |-- public/
+    |-- images/
+    `-- src/
+        |-- App.jsx
+        |-- App.css
+        |-- index.css
+        |-- main.jsx
+        |-- assets/
+        |-- components/
+        |-- context/
+        |-- pages/
+        `-- services/
 ```
 
 ## Installation
 
 ### Prerequisites
-- Python 3.8 or higher
-- Node.js 18 or higher
-- PostgreSQL 12 or higher
-- npm or yarn
+
+- Python 3.10 or newer for local backend development
+- PostgreSQL
+- Node.js and npm for local frontend development
+- Docker, if using the Docker workflow
 
 ### Backend Setup
 
-1. Navigate to the backend directory:
+Run backend commands from the `backend` directory so imports such as `from db.db_config import ...` resolve correctly.
+
 ```bash
 cd backend
-```
-
-2. Create a virtual environment:
-```bash
 python -m venv v_env
 ```
 
-3. Activate the virtual environment:
-```bash
-# On Windows
-v_env\Scripts\activate
+Activate the virtual environment.
 
-# On macOS/Linux
-source v_env/bin/activate
+```powershell
+.\v_env\Scripts\Activate.ps1
 ```
 
-4. Install dependencies:
+Install Python dependencies.
+
 ```bash
 pip install -r requirements.txt
 ```
 
-5. Configure the database:
-- Update the database connection string in `db/db_config.py`
-- Run the database initialization script:
-```bash
-python db/db_inventory.py
+Create a backend environment file from the example and set values for your PostgreSQL database and admin key.
+
+```powershell
+Copy-Item .env.example .env
 ```
 
-6. Start the FastAPI server:
+Example values:
+
+```env
+DATABASE_URL=postgresql://username:password@localhost:5432/database_name
+ADMIN_KEY=your-admin-key
+```
+
+Create the PostgreSQL database named in `DATABASE_URL`. The FastAPI app creates the `sellers` and `inventory` tables on startup.
+
+Start the backend.
+
 ```bash
 uvicorn main:app --reload
 ```
-6. Import sample data (optional):
-```bash
-python -m scripts.csvdata_seller_import
-python -m scripts.csvdata_inventory_import
-```
 
-
-The backend will be available at `http://127.0.0.1:8000`
+The backend runs at `http://127.0.0.1:8000`.
 
 ### Frontend Setup
 
-1. Navigate to the frontend directory:
+Run frontend commands from the `frontend` directory.
+
 ```bash
 cd frontend
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Create environment file:
-```bash
-cp .env.example .env
-```
-
-4. Configure the API base URL in `.env`:
-```
-VITE_API_BASE_URL=http://127.0.0.1:8000
-```
-
-5. Start the development server:
-```bash
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:5173`
+The Vite dev server runs at `http://localhost:5173` by default. The frontend API client calls `http://127.0.0.1:8000`.
 
-### Database Setup
+Available frontend scripts:
 
-1. Create a PostgreSQL database:
-```sql
-CREATE DATABASE inventory_management;
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run preview
 ```
 
-2. Update the database connection string in `backend/db/db_config.py`:
-```python
-DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
+## Docker Workflow
+
+The repository includes a root `Dockerfile` and `.dockerignore`.
+
+The Dockerfile:
+
+1. Uses `node:22` to install frontend dependencies and run `npm run build`.
+2. Uses `python:3.12` for the backend image.
+3. Installs `backend/requirements.txt`.
+4. Copies backend source into `/app`.
+5. Copies the built React files from `/frontend/dist` into `/app/static`.
+6. Starts Uvicorn with `main:app` on `0.0.0.0:8000`.
+
+Build and run from the repository root.
+
+```bash
+docker build -t inventory-system-v2 .
+docker run --rm -p 8000:8000 --env-file backend/.env inventory-system-v2
 ```
 
-3. The application will automatically create tables on first run.
+The container serves the API and built frontend at `http://localhost:8000`. Runtime environment variables must include `DATABASE_URL` and `ADMIN_KEY`.
+
+The `.dockerignore` excludes local virtual environments, `node_modules`, `.git`, caches, and `.env` files from the build context. No `docker-compose.yml` or platform-specific deployment configuration is present in this repository.
 
 ## Usage Guide
 
 ### Admin Workflow
 
-1. **Access Admin Portal**: Navigate to `/admin-portal`
-2. **Authentication**: Enter the admin key (default: `admin_123`)
-3. **View Dashboard**: See all sellers and their products
-4. **Manage Sellers**: 
-   - Click "Edit Seller" to update seller information
-   - Click "Delete Seller" to remove a seller and all their products
-5. **Manage Products**: View and manage any product in the system
-6. **Logout**: Click the logout button to exit admin mode
+1. Start the backend with `DATABASE_URL` and `ADMIN_KEY` configured.
+2. Open `/admin-portal` in the frontend.
+3. Enter the admin key configured in `backend/.env`.
+4. Load all sellers and their product summaries.
+5. Search the loaded dashboard data if needed.
+6. Use update/delete actions. Product and seller mutation requests still use seller-key-protected backend endpoints.
 
 ### Seller Workflow
 
-1. **Seller Registration**: Navigate to `/new-seller-signup` to create a new seller account
-2. **Access Seller Portal**: Navigate to `/seller-portal`
-3. **Authentication**: Enter your unique seller key
-4. **View Dashboard**: See your products with statistics
-5. **Add Products**: Click "Add New Product" to add items to your inventory
-6. **Manage Products**:
-   - Click "Edit" to update product details
-   - Click "Delete" to remove products (with confirmation)
-7. **Logout**: Click the logout button to exit seller mode
+1. Open `/new-seller-signup` to create a seller with a unique email and seller key.
+2. Open `/seller-portal`.
+3. Enter the seller key.
+4. View the seller profile and owned products.
+5. Add, update, or delete owned products.
+6. Update the seller profile if needed.
+7. Delete the seller profile only after deleting all owned products.
 
-### Inventory Workflow
+### Product Browsing Workflow
 
-1. **Browse Products**: Navigate to `/products` to view all products
-2. **Search Products**: Use the search bar to filter by product name
-3. **View Details**: Each product card shows name, description, category, price, and stock status
-4. **Stock Status**: Products display "IN STOCK" or "OUT OF STOCK" badges
-5. **Filter by Seller**: View products from specific sellers
+1. Open `/products`.
+2. Load all products from `/inventory/show-all-products`.
+3. Search by product name through `/inventory/search-products?ITEM_NAME=...`.
+4. Provide a seller key before update or delete actions.
 
 ## Screenshots
 
 ### Frontend Screenshots
 
-### Home Page
+#### Home Page
+
 ![Home Page](frontend/images/homepage.png)
 
-### Products Page
+#### Products Page
+
 ![Products Page](frontend/images/all_products_page.png)
 
-### Seller Portal
+#### Seller Portal
+
 ![Seller Dashboard](frontend/images/seller_dashboard.png)
 
-### Admin Portal
-![Admin Dashboardl](frontend/images/admin_dashboard.png)
+#### Admin Portal
 
-### Add Product Form
+![Admin Dashboard](frontend/images/admin_dashboard.png)
+
+#### Add Product Form
+
 ![Add Product Form](frontend/images/add_product_form.png)
 
 ### Backend Screenshots
 
-### Swagger API Overview
-
-> Overview of all available API endpoints.
+#### Swagger API Overview
 
 ![Swagger Overview](backend/images/swagger_overview.png)
 
-### Add Item Endpoint Example
-
-> Example of request body, responses, and validation for the Add Item API.
+#### Add Item Endpoint Example
 
 ![Add Item Endpoint](backend/images/add_item_endpoint.png)
 
@@ -517,10 +414,10 @@ DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
 
 ![Seller Table](backend/images/seller_table.png)
 
-
 ## Security Notes
 
 ### Seller Key Authentication
+
 - Each seller is assigned a unique alphanumeric key (4-8 characters)
 - Keys are validated server-side before allowing any seller operations
 - Seller keys are passed via HTTP headers (`SELLER-KEY`)
@@ -528,57 +425,33 @@ DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
 - Sellers can only access and modify their own products
 
 ### Admin Key Authentication
+
 - Admin operations require a separate admin key
 - Default admin key is configured in `config.py`
 - Admin key is passed via HTTP headers (`Admin-Key`)
 - Admins have full visibility and control over all sellers and products
 
 ### Authorization Logic
+
 - **Product Operations**: Require seller key matching the product's seller
 - **Seller Operations**: Require seller key matching the seller being modified
 - **Admin Operations**: Require admin key for full system access
 - **Public Operations**: Product viewing and searching are publicly accessible
 
 ### Security Best Practices
+
 - All sensitive operations require authentication
 - Input validation using Pydantic schemas
 - SQL injection prevention via SQLAlchemy ORM
 - CORS enabled for development (restrict in production)
 - Environment variables for sensitive configuration
 
-## Future Improvements
-
-### Backend Enhancements
-- **JWT Authentication**: Replace static keys with token-based authentication
-- **Password Hashing**: Implement bcrypt for secure password storage
-- **Rate Limiting**: Add API rate limiting to prevent abuse
-- **Logging**: Comprehensive request/response logging for debugging
-- **Pagination**: Implement pagination for large datasets
-- **File Upload**: Add product image upload functionality
-- **Email Verification**: Verify seller email addresses during registration
-- **Audit Trail**: Track all changes to seller and product data
-
-### Frontend Enhancements
-- **TypeScript Migration**: Add type safety with TypeScript
-- **Dark Mode**: Implement theme switching
-- **Advanced Filtering**: Multi-criteria filtering for products
-- **Export Functionality**: Export data to CSV/Excel
-- **Charts and Analytics**: Visual analytics dashboard
-- **Real-time Updates**: WebSocket integration for live updates
-- **Offline Support**: Service worker for offline functionality
-- **Performance Optimization**: Implement code splitting and lazy loading
-
-### Database Enhancements
-- **Soft Delete**: Implement soft delete for data recovery
-- **Indexing**: Add database indexes for improved query performance
-- **Data Archiving**: Archive old data for long-term storage
-- **Backup Strategy**: Automated database backup system
-
 ## Lessons Learned
 
 ### Technical Concepts Demonstrated
 
 #### Backend Development
+
 - **RESTful API Design**: Proper HTTP method usage and resource naming conventions
 - **Layered Architecture**: Separation of concerns across routes, services, and models
 - **ORM Integration**: Database operations using SQLAlchemy with Python
@@ -588,6 +461,7 @@ DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
 - **Error Handling**: Comprehensive exception handling and user feedback
 
 #### Frontend Development
+
 - **Component-Based Architecture**: Reusable React components for maintainability
 - **State Management**: Context API and Redux Toolkit for application state
 - **Client-Side Routing**: React Router for SPA navigation
@@ -597,12 +471,14 @@ DATABASE_URL = "postgresql://username:password@localhost/inventory_management"
 - **Form Validation**: Client-side validation with user feedback
 
 #### Database Design
+
 - **Relational Modeling**: Foreign key relationships and data integrity
 - **ORM Patterns**: SQLAlchemy ORM for database abstraction
 - **Schema Design**: Normalized database structure for data consistency
 - **Query Optimization**: Efficient database queries with proper indexing
 
 #### Software Engineering Practices
+
 - **Code Organization**: Modular project structure for scalability
 - **Documentation**: Comprehensive inline documentation and comments
 - **Version Control**: Git for source control and collaboration
