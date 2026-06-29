@@ -14,7 +14,6 @@ This repository does not contain tagged releases. This changelog documents the c
   - `SECURITY.md`
   - `DEPLOYMENT.md`
   - `CONTRIBUTING.md`
-  - `ROADMAP.md`
   - `CHANGELOG.md`
   - `PROJECT_STRUCTURE.md`
   - `TECH_STACK.md`
