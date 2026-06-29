@@ -53,7 +53,6 @@ flowchart TB
 | `CONTRIBUTING.md` | Contribution workflow |
 | `PROJECT_STRUCTURE.md` | This file |
 | `TECH_STACK.md` | Dependency and technology inventory |
-| `INTERVIEW_GUIDE.md` | Portfolio/interview preparation |
 | `Dockerfile` | Multi-stage frontend/backend Docker image |
 | `.dockerignore` | Excludes local envs, caches, `.git`, virtualenv, and `node_modules` from Docker build context |
 

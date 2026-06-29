@@ -38,7 +38,6 @@ The application supports seller registration, seller-key protected product manag
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Setup, workflow, style, and contribution guidance |
 | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Repository tree and folder responsibilities |
 | [TECH_STACK.md](TECH_STACK.md) | Actual dependencies, versions, and usage status |
-| [INTERVIEW_GUIDE.md](INTERVIEW_GUIDE.md) | Portfolio talking points and technical Q&A prep |
 
 ## Engineering Highlights
 
