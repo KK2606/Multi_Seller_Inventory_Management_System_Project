@@ -36,7 +36,6 @@ The application supports seller registration, seller-key protected product manag
 | [SECURITY.md](SECURITY.md) | Current security controls, known risks, and hardening roadmap |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | Local and Docker deployment workflows |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Setup, workflow, style, and contribution guidance |
-| [ROADMAP.md](ROADMAP.md) | Completed, planned, and work-in-progress items |
 | [CHANGELOG.md](CHANGELOG.md) | Current documentation and implementation snapshot |
 | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Repository tree and folder responsibilities |
 | [TECH_STACK.md](TECH_STACK.md) | Actual dependencies, versions, and usage status |
