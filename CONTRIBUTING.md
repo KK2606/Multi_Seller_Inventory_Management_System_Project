@@ -134,7 +134,7 @@ Update these files when behavior changes:
 | Auth, authorization, rate limits, CORS | `SECURITY.md`, `API.md` |
 | Docker/env/deployment behavior | `DEPLOYMENT.md`, `README.md` |
 | Dependencies | `TECH_STACK.md`, `README.md` |
-| Planned or completed work | `ROADMAP.md`, `CHANGELOG.md` |
+
 
 ## Pull Request Checklist
 

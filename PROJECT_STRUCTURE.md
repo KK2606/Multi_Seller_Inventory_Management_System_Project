@@ -51,8 +51,6 @@ flowchart TB
 | `SECURITY.md` | Current controls and hardening plan |
 | `DEPLOYMENT.md` | Local and Docker deployment |
 | `CONTRIBUTING.md` | Contribution workflow |
-| `ROADMAP.md` | Planned and completed work |
-| `CHANGELOG.md` | Project/documentation change notes |
 | `PROJECT_STRUCTURE.md` | This file |
 | `TECH_STACK.md` | Dependency and technology inventory |
 | `INTERVIEW_GUIDE.md` | Portfolio/interview preparation |
