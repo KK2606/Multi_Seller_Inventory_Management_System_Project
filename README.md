@@ -1,509 +1,485 @@
 # Multi-Seller Inventory Management System
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.136.3-green?style=flat-square&logo=fastapi)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-supported-blue?style=flat-square&logo=postgresql)
-![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0.50-red?style=flat-square&logo=sqlalchemy)
-![Pydantic](https://img.shields.io/badge/Pydantic-2.13.4-red?style=flat-square&logo=pydantic)
-![React](https://img.shields.io/badge/React-19.2.6-blue?style=flat-square&logo=react)
-![Vite](https://img.shields.io/badge/Vite-8.0.12-purple?style=flat-square&logo=vite)
-![Axios](https://img.shields.io/badge/Axios-1.16.1-green?style=flat-square&logo=axios)
-![React Hot Toast](https://img.shields.io/badge/React%20Hot%20Toast-2.6.0-blue?style=flat-square&logo=react-hot-toast)
-![React Router](https://img.shields.io/badge/React%20Router-7.16.0-blue?style=flat-square&logo=react-router)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6-blue?style=flat-square&logo=javascript)
-![Docker](https://img.shields.io/badge/Dockerfile-present-blue?style=flat-square&logo=docker)
+<p align="center">
+  <img src="frontend/images/homepage.png" alt="Multi-Seller Inventory Management System homepage" width="900">
+</p>
 
-## Project Overview
+<p align="center">
+  <strong>FastAPI + React inventory management for sellers, products, and admin oversight.</strong>
+</p>
 
-This repository contains a FastAPI backend and a Vite React frontend for a multi-seller inventory management system. Sellers register with a business name, email address, and seller key, then use that key to manage their own products. Admin access uses a separate admin key to load all sellers and their product lists.
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.12%20Docker-blue?style=for-the-badge&logo=python">
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-0.136.3-009688?style=for-the-badge&logo=fastapi">
+  <img alt="React" src="https://img.shields.io/badge/React-19.2.6-61DAFB?style=for-the-badge&logo=react&logoColor=111">
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-8.0.12-646CFF?style=for-the-badge&logo=vite&logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-required-4169E1?style=for-the-badge&logo=postgresql">
+  <img alt="Docker" src="https://img.shields.io/badge/Dockerfile-present-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+  <img alt="License" src="https://img.shields.io/badge/License-not%20specified-lightgrey?style=for-the-badge">
+</p>
 
-The backend persists data in PostgreSQL through SQLAlchemy models, validates request bodies with Pydantic schemas, applies SlowAPI rate limits on route handlers, enables CORS for all origins, and exposes FastAPI's default Swagger UI. The frontend is a React single-page app with pages for products, seller registration, seller dashboard, admin dashboard, and create/update forms.
+## Overview
+
+Multi-Seller Inventory Management System is a full-stack inventory application with a FastAPI backend, a Vite React frontend, SQLAlchemy models, PostgreSQL persistence, CSV-based seed data, and a Docker build that serves the compiled frontend from the backend container.
+
+The application supports seller registration, seller-key protected product management, public product browsing and search, and an admin-key protected dashboard that lists sellers with their product summaries. The codebase is organized as a route-service-schema-model backend and a route-driven React single-page app.
+
+> **Production readiness note:** The project demonstrates a complete CRUD workflow, validation, authorization checks, rate limiting, and Docker packaging. It still uses plain admin/seller keys rather than hashed credentials, sessions, or JWT/OAuth, so public production deployment requires the security hardening called out in [SECURITY.md](SECURITY.md) and [ROADMAP.md](ROADMAP.md).
+
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Backend/frontend architecture, request lifecycle, data flow, and diagrams |
+| [API.md](API.md) | Verified REST endpoints, headers, query params, schemas, examples, and errors |
+| [DATABASE.md](DATABASE.md) | SQLAlchemy schema, ER diagram, seed flow, constraints, and data notes |
+| [SECURITY.md](SECURITY.md) | Current security controls, known risks, and hardening roadmap |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Local and Docker deployment workflows |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Setup, workflow, style, and contribution guidance |
+| [ROADMAP.md](ROADMAP.md) | Completed, planned, and work-in-progress items |
+| [CHANGELOG.md](CHANGELOG.md) | Current documentation and implementation snapshot |
+| [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Repository tree and folder responsibilities |
+| [TECH_STACK.md](TECH_STACK.md) | Actual dependencies, versions, and usage status |
+| [INTERVIEW_GUIDE.md](INTERVIEW_GUIDE.md) | Portfolio talking points and technical Q&A prep |
+
+## Engineering Highlights
+
+- **Layered FastAPI backend:** routers in `backend/routes`, business logic in `backend/services`, request/response models in `backend/schemas`, and SQLAlchemy tables in `backend/models`.
+- **PostgreSQL-backed persistence:** SQLAlchemy connects through `DATABASE_URL`; startup creates tables and seeds sample data when tables are empty.
+- **Seller ownership enforcement:** product and seller mutations authenticate a `SELLER-KEY` header and verify ownership before updates/deletes.
+- **Admin dashboard flow:** admin access is protected by an `Admin-Key` header compared with the `ADMIN_KEY` environment variable.
+- **Rate limiting:** SlowAPI middleware protects endpoints with per-route limits and a custom `429` JSON response.
+- **React SPA:** React Router pages cover product browsing, seller portal, admin portal, seller signup, and update/create forms.
+- **Centralized API client:** `frontend/src/services/api.jsx` uses Axios with `VITE_API_URL`, a 15-second timeout, cancellation helpers, and shared API error formatting.
+- **Docker packaging:** a multi-stage Dockerfile builds the React frontend with Node 22 and serves it from the Python 3.12 FastAPI image.
 
 ## Features
 
-### Seller Features
+### Current Backend Features
 
-- Register a seller with `add_seller_name`, `add_seller_email`, and `add_seller_key`.
-- Load a seller dashboard with the `SELLER-KEY` request header.
-- View the authenticated seller profile and owned products.
-- Add, update, and delete products owned by the authenticated seller.
-- Update seller name, email, or key.
-- Delete a seller profile only after all owned products have been deleted.
+| Area | Implemented behavior |
+| --- | --- |
+| Inventory | List products, exact-match search, add products, update products, delete products |
+| Sellers | Register sellers, load seller dashboard, update seller account, delete seller account |
+| Admin | Load all sellers with product summaries and seller keys |
+| Validation | Email validation, seller-key format validation, duplicate email/key checks, positive price, non-negative stock |
+| Authorization | Seller-key authentication, admin-key authentication, product ownership checks, seller ownership checks |
+| Rate limiting | Per-route SlowAPI limits with a custom `RATE_LIMIT_EXCEEDED` response |
+| Seed data | Imports 9 sellers and 20 products from CSV when tables are empty |
 
-### Admin Features
+### Current Frontend Features
 
-- Load all sellers and their products with the `Admin-Key` request header.
-- View seller IDs, names, emails, seller keys, and product summaries.
-- See dashboard totals for sellers, products, and visible search results in the frontend.
-- Search loaded dashboard data in the frontend.
-- Use seller-key-protected product and seller actions from the admin portal.
+| Route | Feature |
+| --- | --- |
+| `/` | Home page with navigation to products and admin portal |
+| `/products` | Product table, product-name search, add/update/delete entry points |
+| `/seller-portal` | Seller-key login, seller profile summary, owned product table, seller/product actions |
+| `/admin-portal` | Admin-key dashboard, seller/product totals, local dashboard search, update/delete actions |
+| `/new-seller-signup` | Seller registration form |
+| `/add-product` | Seller-key protected product creation |
+| `/update-product/:id` | Seller-key protected product update |
+| `/update-seller/:sellerId` | Seller-key protected seller update |
 
-### Inventory Features
+### Planned / Work In Progress
 
-- List all products.
-- Search products by exact query-parameter matches.
-- Add products with name, description, category, price, and stock quantity.
-- Update product fields individually by sending nullable update fields.
-- Delete products by item ID.
-- Automatically set `in_stock` from stock quantity when products are added or updated.
-- Validate that product price is greater than zero and stock quantity is not negative.
+The source contains TODOs for pagination, sorting, richer filtering, fuzzy search, image uploads, product variations, seller verification, product recovery/archiving, seller deactivation/recovery, stronger authentication, logging, and additional security middleware. See [ROADMAP.md](ROADMAP.md).
 
-### Frontend Features
+## Screenshots
 
-- React Router routes for home, products, seller portal, admin portal, seller signup, product creation, product update, and seller update.
-- Axios API client configured with `http://127.0.0.1:8000`.
-- React Hot Toast notifications for user actions and API errors.
-- Seller key state stored with React Context.
-- Responsive tables, form components, loading states, empty states, and error states.
+<details open>
+<summary><strong>Frontend</strong></summary>
 
-## Technology Stack
+### Home
 
-### Backend
+![Home page](frontend/images/homepage.png)
 
-- FastAPI
-- Uvicorn
-- SQLAlchemy
-- PostgreSQL through `psycopg2`
-- Pydantic and `email-validator`
-- `python-dotenv`
-- SlowAPI
+### Products
 
-### Frontend
+![All products page](frontend/images/all_products_page.png)
 
-- React
-- Vite
-- React Router DOM
-- Axios
-- React Hot Toast
-- React Context for seller-key state
+### Seller Portal
 
-`package.json` also includes Bootstrap, Redux Toolkit, and React Redux dependencies, but the current frontend source does not import Bootstrap or configure a Redux store.
+![Seller dashboard](frontend/images/seller_dashboard.png)
 
-## System Architecture
+### Admin Portal
 
-### Backend
+![Admin dashboard](frontend/images/admin_dashboard.png)
 
-The backend is organized around FastAPI route modules, service modules, Pydantic schemas, SQLAlchemy models, and a shared database session dependency.
+### Add Product
 
-```text
-FastAPI app (backend/main.py)
-  -> routers (backend/routes/)
-  -> services (backend/services/)
-  -> schemas (backend/schemas/)
-  -> models (backend/models/)
-  -> PostgreSQL connection/session (backend/db/db_config.py)
+![Add product form](frontend/images/add_product_form.png)
+
+</details>
+
+<details>
+<summary><strong>Backend and Database Screenshots</strong></summary>
+
+### Swagger Overview
+
+![Swagger overview](backend/images/swagger_overview.png)
+
+### Add Product Endpoint
+
+![Add item endpoint](backend/images/add_item_endpoint.png)
+
+### Inventory Table
+
+![Inventory table](backend/images/inventory_table.png)
+
+### Seller Table
+
+![Seller table](backend/images/seller_table.png)
+
+</details>
+
+## Architecture Overview
+
+```mermaid
+flowchart LR
+    User["Browser user"] --> SPA["React SPA<br/>frontend/src"]
+    SPA -->|Axios<br/>VITE_API_URL| API["FastAPI app<br/>backend/main.py"]
+    API --> Routers["Routers<br/>admin_routes.py<br/>inventory_routes.py<br/>seller_routes.py"]
+    Routers --> Services["Services<br/>auth, validators,<br/>inventory, seller, admin"]
+    Services --> Models["SQLAlchemy models<br/>Seller_database<br/>Inventory_database"]
+    Models --> DB[("PostgreSQL")]
+    API --> Limiter["SlowAPI rate limiter"]
+    API --> CORS["CORS middleware"]
+    API -. Docker only .-> Static["StaticFiles<br/>/app/static"]
 ```
 
-At startup, `backend/main.py` creates database tables with `Base.metadata.create_all(bind=engine)`, registers the admin, inventory, and seller routers, installs SlowAPI middleware, enables CORS, and mounts `StaticFiles(directory="static", html=True)` at `/` for the Docker-built frontend.
+```mermaid
+sequenceDiagram
+    participant Client as React/Axios Client
+    participant FastAPI as FastAPI Route
+    participant Limiter as SlowAPI
+    participant Service as Service Layer
+    participant DB as PostgreSQL
 
-### Frontend
+    Client->>FastAPI: HTTP request
+    FastAPI->>Limiter: apply endpoint rate limit
+    Limiter-->>FastAPI: allow or 429
+    FastAPI->>FastAPI: validate query/body/header with FastAPI + Pydantic
+    FastAPI->>Service: call service function
+    Service->>DB: SQLAlchemy query/mutation
+    DB-->>Service: ORM rows/results
+    Service-->>FastAPI: dict/model/string or HTTPException
+    FastAPI-->>Client: JSON response
+```
 
-The frontend is a Vite React app. `frontend/src/App.jsx` defines the browser routes, `frontend/src/services/api.jsx` centralizes Axios behavior, `frontend/src/context/Seller_Context.jsx` stores the seller key, and page/components files implement the UI workflows.
+## Database Overview
 
-## Database Design
+```mermaid
+erDiagram
+    SELLERS ||--o{ INVENTORY : owns
+    SELLERS {
+        int seller_id PK
+        string seller_name
+        string seller_email UK
+        string seller_key UK
+    }
+    INVENTORY {
+        int item_id PK
+        string item_name
+        string item_description
+        string item_category
+        float item_price
+        int item_stock_qty
+        boolean in_stock
+        int seller_id FK
+    }
+```
 
-### `sellers`
+The backend defines two SQLAlchemy models:
 
-| Column         | Type    | Notes                |
-| -------------- | ------- | -------------------- |
-| `seller_id`    | Integer | Primary key, indexed |
-| `seller_name`  | String  | Required             |
-| `seller_email` | String  | Required, unique     |
-| `seller_key`   | String  | Required, unique     |
+- `Seller_database` maps to the `sellers` table.
+- `Inventory_database` maps to the `inventory` table and references `sellers.seller_id`.
 
-### `inventory`
+No Alembic migration setup is present. `backend/main.py` calls `Base.metadata.create_all(bind=engine)` at startup.
 
-| Column             | Type    | Notes                              |
-| ------------------ | ------- | ---------------------------------- |
-| `item_id`          | Integer | Primary key, indexed               |
-| `item_name`        | String  | Required                           |
-| `item_description` | String  | Required                           |
-| `item_category`    | String  | Required                           |
-| `item_price`       | Float   | Required                           |
-| `item_stock_qty`   | Integer | Required, default `0`              |
-| `in_stock`         | Boolean | Required, default `False`          |
-| `seller_id`        | Integer | Foreign key to `sellers.seller_id` |
+## Tech Stack
 
-One seller can own multiple inventory items through `inventory.seller_id`. The current service logic blocks seller deletion when that seller still owns inventory items; no cascade delete is configured in the SQLAlchemy model.
+| Layer | Technologies actually present |
+| --- | --- |
+| Backend API | FastAPI `0.136.3`, Starlette, Uvicorn `0.48.0` |
+| Backend data | SQLAlchemy `2.0.50`, PostgreSQL via `psycopg2` `2.9.12` |
+| Backend validation/config | Pydantic `2.13.4`, `email-validator`, `python-dotenv` |
+| Backend protection | SlowAPI `0.1.10` and `limits` |
+| Frontend | React `19.2.6`, React DOM, Vite `8.0.12`, React Router DOM `7.16.0` |
+| Frontend API/UI | Axios `1.16.1`, React Hot Toast `2.6.0`, CSS in `frontend/src/index.css` |
+| Tooling | ESLint `10.3.0`, Docker multi-stage build |
 
-## Environment Configuration
-
-Backend configuration is loaded from environment variables with `python-dotenv`.
-
-| Variable       | Used by                                                     | Purpose                                                           |
-| -------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- |
-| `DATABASE_URL` | `backend/db/db_config.py`                                   | PostgreSQL connection string passed to SQLAlchemy `create_engine` |
-| `ADMIN_KEY`    | `backend/config.py` and `backend/services/auth_services.py` | Value expected in the `Admin-Key` header                          |
-
-`backend/.env.example` contains the expected variable names. The frontend currently does not read a Vite environment variable for the API URL; Axios uses `http://127.0.0.1:8000` directly.
-
-## API Endpoints
-
-FastAPI's default API documentation is available at `/docs` when the backend is running.
-
-| Method   | Route                          | Query Parameters                                                                              | Body                                                                                                           | Authentication      | Rate Limit  |
-| -------- | ------------------------------ | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------- | ----------- |
-| `GET`    | `/inventory/show-all-products` | None                                                                                          | None                                                                                                           | None                | `50/minute` |
-| `GET`    | `/inventory/search-products`   | `ITEM_ID`, `ITEM_NAME`, `ITEM_CATEGORY`, `ITEM_PRICE`, `IN_STOCK`, `SELLER_ID`, `SELLER_NAME` | None                                                                                                           | None                | `50/minute` |
-| `POST`   | `/inventory/add-product`       | None                                                                                          | `add_item_name`, `add_item_description`, `add_item_category`, `add_item_price`, `add_stock_qty`                | `SELLER-KEY` header | `20/minute` |
-| `PUT`    | `/inventory/update-product`    | `ITEM_ID`                                                                                     | `update_item_name`, `update_item_description`, `update_item_category`, `update_item_price`, `update_stock_qty` | `SELLER-KEY` header | `20/minute` |
-| `DELETE` | `/inventory/delete-product`    | `DEL_ID`                                                                                      | None                                                                                                           | `SELLER-KEY` header | `20/minute` |
-| `POST`   | `/seller/new-seller-signup`    | None                                                                                          | `add_seller_name`, `add_seller_email`, `add_seller_key`                                                        | None                | `3/minute`  |
-| `GET`    | `/seller/seller-dashboard`     | None                                                                                          | None                                                                                                           | `SELLER-KEY` header | `5/minute`  |
-| `PUT`    | `/seller/update-seller`        | `SELLER_ID`                                                                                   | `update_seller_name`, `update_seller_email`, `update_seller_key`                                               | `SELLER-KEY` header | `5/minute`  |
-| `DELETE` | `/seller/delete-seller`        | `DEL_ID`                                                                                      | None                                                                                                           | `SELLER-KEY` header | `5/minute`  |
-| `GET`    | `/admin/admin_dashboard`       | None                                                                                          | None                                                                                                           | `Admin-Key` header  | `5/minute`  |
-
-Search filters are exact matches in the backend service. If no product matches a search, the service raises `404` with `detail="Item not found"`.
-
-## Validation and Security Notes
-
-- Seller authentication checks the `SELLER-KEY` header against `sellers.seller_key`.
-- Admin authentication checks the `Admin-Key` header against the `ADMIN_KEY` environment variable.
-- Seller keys are validated by Pydantic on create/update as 4 to 8 alphanumeric characters.
-- Seller emails are validated with Pydantic `EmailStr`.
-- Duplicate seller email and seller key checks are performed in service logic.
-- Product ownership is checked before product update/delete.
-- Seller ownership is checked before seller update/delete.
-- Product price must be greater than zero.
-- Product stock quantity must be zero or greater.
-- Rate-limited requests return HTTP `429` with `error: "RATE_LIMIT_EXCEEDED"`.
-- CORS is configured with `allow_origins=["*"]`, `allow_methods=["*"]`, and `allow_headers=["*"]`.
-- Seller keys and the admin key are plain key values; the current backend does not implement passwords, JWTs, hashing, or sessions.
-
-## Frontend Routes
-
-| Route                      | Component        | Purpose                                                                          |
-| -------------------------- | ---------------- | -------------------------------------------------------------------------------- |
-| `/`                        | `Home`           | Landing page for the app                                                         |
-| `/products`                | `Products`       | Browse products, search by product name, and start product update/delete actions |
-| `/seller-portal`           | `Seller_Portal`  | Load seller dashboard with a seller key and manage owned products/profile        |
-| `/admin-portal`            | `Admin_Portal`   | Load all sellers and product summaries with the admin key                        |
-| `/add-product`             | `Add_Product`    | Create a product with a seller key                                               |
-| `/update-product/:id`      | `Update_Product` | Update a product by item ID with a seller key                                    |
-| `/update-seller/:sellerId` | `Update_Seller`  | Update seller fields by seller ID with the current seller key                    |
-| `/new-seller-signup`       | `New_Seller`     | Create a new seller                                                              |
+Installed but not currently used in source: Bootstrap, Redux Toolkit, and React Redux.
 
 ## Project Structure
 
+```mermaid
+flowchart TB
+    Root["Inventory_System_v2"]
+    Root --> Backend["backend"]
+    Root --> Frontend["frontend"]
+    Root --> Docker["Dockerfile"]
+    Root --> Docs["Markdown documentation"]
+
+    Backend --> BMain["main.py"]
+    Backend --> BRoutes["routes"]
+    Backend --> BServices["services"]
+    Backend --> BSchemas["schemas"]
+    Backend --> BModels["models"]
+    Backend --> BDB["db"]
+    Backend --> BScripts["scripts"]
+    Backend --> BSample["sample_data"]
+
+    Frontend --> FSrc["src"]
+    Frontend --> FPublic["public"]
+    Frontend --> FImages["images"]
+    FSrc --> FPages["pages"]
+    FSrc --> FComponents["components"]
+    FSrc --> FContext["context"]
+    FSrc --> FServices["services"]
+```
+
 ```text
 Inventory_System_v2/
-|-- .dockerignore
-|-- Dockerfile
-|-- README.md
 |-- backend/
-|   |-- .env.example
-|   |-- config.py
 |   |-- main.py
+|   |-- config.py
 |   |-- requirements.txt
-|   |-- core/
-|   |   `-- rate_limiter.py
-|   |-- db/
-|   |   `-- db_config.py
+|   |-- core/rate_limiter.py
+|   |-- db/db_config.py
 |   |-- models/
-|   |   |-- db_inventory.py
-|   |   `-- db_seller.py
 |   |-- routes/
-|   |   |-- admin_routes.py
-|   |   |-- inventory_routes.py
-|   |   `-- seller_routes.py
 |   |-- schemas/
-|   |   |-- admin_schema.py
-|   |   |-- inventory_schema.py
-|   |   `-- seller_schema.py
 |   |-- services/
-|   |   |-- admin_service.py
-|   |   |-- auth_services.py
-|   |   |-- inventory_services.py
-|   |   |-- seller_services.py
-|   |   `-- validators.py
 |   |-- scripts/
-|   |   |-- seed_database.py
-|   |   |-- csvdata_inventory_import.py
-|   |   `-- csvdata_seller_import.py
 |   |-- sample_data/
-|   |   |-- _inventory_data.csv
-|   |   `-- _seller_data.csv
 |   `-- images/
-`-- frontend/
-    |-- index.html
-    |-- package.json
-    |-- package-lock.json
-    |-- vite.config.js
-    |-- eslint.config.js
-    |-- public/
-    |-- images/
-    `-- src/
-        |-- App.jsx
-        |-- App.css
-        |-- index.css
-        |-- main.jsx
-        |-- assets/
-        |-- components/
-        |-- context/
-        |-- pages/
-        `-- services/
+|-- frontend/
+|   |-- package.json
+|   |-- vite.config.js
+|   |-- eslint.config.js
+|   |-- index.html
+|   |-- public/
+|   |-- images/
+|   `-- src/
+|       |-- App.jsx
+|       |-- main.jsx
+|       |-- index.css
+|       |-- components/
+|       |-- context/
+|       |-- pages/
+|       `-- services/
+|-- Dockerfile
+|-- .dockerignore
+`-- README.md and companion documentation
 ```
 
 ## Installation
 
 ### Prerequisites
 
-- Python 3.10 or newer for local backend development
-- PostgreSQL
-- Node.js and npm for local frontend development
-- Docker, if using the Docker workflow
+- Python 3.10+ for local development (`Dockerfile` uses Python 3.12)
+- PostgreSQL database
+- Node.js/npm for the frontend (`Dockerfile` uses Node 22)
+- Docker, if using the container workflow
 
 ### Backend Setup
 
-Run backend commands from the `backend` directory so imports such as `from db.db_config import ...` resolve correctly.
-
-```bash
-cd backend
-python -m venv v_env
-```
-
-Activate the virtual environment.
+Run backend commands from `backend/` so imports such as `from db.db_config import ...` resolve correctly.
 
 ```powershell
+cd backend
+python -m venv v_env
 .\v_env\Scripts\Activate.ps1
-```
-
-Install Python dependencies.
-
-```bash
 pip install -r requirements.txt
 ```
 
-Create a backend environment file from the example and set values for your PostgreSQL database and admin key.
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Example values:
+Create `backend/.env`:
 
 ```env
 DATABASE_URL=postgresql://username:password@localhost:5432/database_name
-ADMIN_KEY=your-admin-key
+ADMIN_KEY=replace-with-your-admin-key
 ```
 
-Create the PostgreSQL database named in `DATABASE_URL`. The FastAPI app creates the `sellers` and `inventory` tables on startup and will automatically fill them with data from `sample_data/_seller_data.csv` and `sample_data/_inventory_data.csv` when backend is started.
+Create the PostgreSQL database referenced by `DATABASE_URL`, then start the API:
 
-Start the backend.
-
-```bash
+```powershell
 uvicorn main:app --reload
 ```
 
-The backend runs at `http://127.0.0.1:8000`.
+Backend URLs:
+
+- API root host: `http://127.0.0.1:8000`
+- Swagger UI: `http://127.0.0.1:8000/docs`
 
 ### Frontend Setup
 
-Run frontend commands from the `frontend` directory.
+Run frontend commands from `frontend/`.
 
-```bash
+```powershell
 cd frontend
 npm install
+```
+
+Create `frontend/.env`:
+
+```env
+VITE_API_URL=http://127.0.0.1:8000
+```
+
+Start the frontend:
+
+```powershell
 npm run dev
 ```
 
-The Vite dev server runs at `http://localhost:5173` by default. The frontend API client calls `http://127.0.0.1:8000`.
+Vite usually serves the frontend at `http://localhost:5173`.
 
-Available frontend scripts:
+## Configuration
 
-```bash
-npm run dev
-npm run build
-npm run lint
-npm run preview
-```
+| Variable | Required | Used by | Description |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | Yes | `backend/db/db_config.py` | PostgreSQL SQLAlchemy connection string |
+| `ADMIN_KEY` | Yes | `backend/config.py`, `services/auth_services.py` | Expected value for the `Admin-Key` request header |
+| `RUNNING_IN_DOCKER` | Docker frontend serving only | `backend/main.py` | When set to `true`, mounts `static/` at `/` |
+| `PORT` | Optional in Docker | `Dockerfile` CMD | Overrides Uvicorn port; defaults to `8000` |
+| `VITE_API_URL` | Yes for frontend | `frontend/src/services/api.jsx` | Axios base URL for API calls |
 
-## Docker Workflow
-
-The repository includes a root `Dockerfile` and `.dockerignore`.
-
-The Dockerfile:
-
-1. Uses `node:22` to install frontend dependencies and run `npm run build`.
-2. Uses `python:3.12` for the backend image.
-3. Installs `backend/requirements.txt`.
-4. Copies backend source into `/app`.
-5. Copies the built React files from `/frontend/dist` into `/app/static`.
-6. Starts Uvicorn with `main:app` on `0.0.0.0:8000`.
-
-Build and run from the repository root.
-
-```bash
-docker build -t inventory-system-v2 .
-docker run --rm -p 8000:8000 --env-file backend/.env inventory-system-v2
-```
-
-The container serves the API and built frontend at `http://localhost:8000`. Runtime environment variables must include `DATABASE_URL` and `ADMIN_KEY`.
-
-The `.dockerignore` excludes local virtual environments, `node_modules`, `.git`, caches, and `.env` files from the build context. No `docker-compose.yml` or platform-specific deployment configuration is present in this repository.
-
-## Usage Guide
-
-### Admin Workflow
-
-1. Start the backend with `DATABASE_URL` and `ADMIN_KEY` configured.
-2. Open `/admin-portal` in the frontend.
-3. Enter the admin key configured in `backend/.env`.
-4. Load all sellers and their product summaries.
-5. Search the loaded dashboard data if needed.
-6. Use update/delete actions. Product and seller mutation requests still use seller-key-protected backend endpoints.
+## Usage
 
 ### Seller Workflow
 
-1. Open `/new-seller-signup` to create a seller with a unique email and seller key.
+1. Register a seller at `/new-seller-signup`.
 2. Open `/seller-portal`.
 3. Enter the seller key.
 4. View the seller profile and owned products.
-5. Add, update, or delete owned products.
-6. Update the seller profile if needed.
-7. Delete the seller profile only after deleting all owned products.
+5. Add, update, or delete products.
+6. Delete the seller only after all owned products are removed.
+
+### Admin Workflow
+
+1. Set `ADMIN_KEY` in `backend/.env`.
+2. Open `/admin-portal`.
+3. Enter the admin key.
+4. View all sellers and product summaries.
+5. Use product/seller actions, which still call seller-key protected backend endpoints.
 
 ### Product Browsing Workflow
 
 1. Open `/products`.
-2. Load all products from `/inventory/show-all-products`.
-3. Search by product name through `/inventory/search-products?ITEM_NAME=...`.
-4. Provide a seller key before update or delete actions.
+2. Browse products from `/inventory/show-all-products`.
+3. Search by exact product name through `/inventory/search-products?ITEM_NAME=...`.
+4. Provide a seller key for update/delete actions.
 
-## Screenshots
+## API Overview
 
-### Frontend Screenshots
+| Method | Endpoint | Auth | Rate limit |
+| --- | --- | --- | --- |
+| `GET` | `/inventory/show-all-products` | Public | `50/minute` |
+| `GET` | `/inventory/search-products` | Public | `50/minute` |
+| `POST` | `/inventory/add-product` | `SELLER-KEY` | `20/minute` |
+| `PUT` | `/inventory/update-product` | `SELLER-KEY` | `20/minute` |
+| `DELETE` | `/inventory/delete-product` | `SELLER-KEY` | `20/minute` |
+| `POST` | `/seller/new-seller-signup` | Public | `3/minute` |
+| `GET` | `/seller/seller-dashboard` | `SELLER-KEY` | `5/minute` |
+| `PUT` | `/seller/update-seller` | `SELLER-KEY` | `5/minute` |
+| `DELETE` | `/seller/delete-seller` | `SELLER-KEY` | `5/minute` |
+| `GET` | `/admin/admin_dashboard` | `Admin-Key` | `5/minute` |
 
-#### Home Page
+See [API.md](API.md) for request fields, response shapes, examples, and implementation notes.
 
-![Home Page](frontend/images/homepage.png)
+## Security Overview
 
-#### Products Page
+Current controls:
 
-![Products Page](frontend/images/all_products_page.png)
+- Seller keys are validated as 4-8 alphanumeric characters on seller create/update.
+- Seller emails use Pydantic `EmailStr`.
+- Duplicate seller email and seller key checks are performed in service logic.
+- Seller mutations authenticate `SELLER-KEY`.
+- Admin dashboard authenticates `Admin-Key`.
+- Product and seller ownership checks return `403` when a valid seller attempts to modify another seller's resources.
+- SlowAPI returns `429` after configured endpoint limits.
 
-#### Seller Portal
+Important limitations:
 
-![Seller Dashboard](frontend/images/seller_dashboard.png)
+- Seller keys are stored in plaintext.
+- Admin auth is a static environment key.
+- No JWT, OAuth, password hashing, refresh-token, session, or role model exists.
+- CORS currently allows all origins.
+- The database URL is printed during backend import in `backend/db/db_config.py`.
 
-#### Admin Portal
+See [SECURITY.md](SECURITY.md) for the hardening checklist.
 
-![Admin Dashboard](frontend/images/admin_dashboard.png)
+## Deployment
 
-#### Add Product Form
+The root `Dockerfile` builds the frontend and backend into one image:
 
-![Add Product Form](frontend/images/add_product_form.png)
+```powershell
+docker build -t inventory-system-v2 .
+docker run --rm -p 8000:8000 --env-file backend/.env.docker inventory-system-v2
+```
 
-### Backend Screenshots
+For the built React app to be served from FastAPI, the runtime environment must include:
 
-#### Swagger API Overview
+```env
+RUNNING_IN_DOCKER=true
+```
 
-![Swagger Overview](backend/images/swagger_overview.png)
+The container expects PostgreSQL to be reachable through `DATABASE_URL`. No `docker-compose.yml`, managed cloud configuration, reverse proxy, HTTPS configuration, or migration runner is present in this repository.
 
-#### Add Item Endpoint Example
+## Roadmap
 
-![Add Item Endpoint](backend/images/add_item_endpoint.png)
+See [ROADMAP.md](ROADMAP.md) for the full list. The highest-impact planned items are:
 
-### Database Tables
+- Replace static/plain seller/admin keys with production authentication.
+- Add Alembic migrations.
+- Add automated tests and CI.
+- Align API response schemas with frontend table expectations.
+- Restrict CORS and remove sensitive startup prints.
+- Add pagination, sorting, filtering, and fuzzy search.
 
-#### Inventory Table
+## FAQ
 
-![Inventory Table](backend/images/inventory_table.png)
+<details>
+<summary><strong>Does the backend create database tables automatically?</strong></summary>
 
-#### Seller Table
+Yes. `backend/main.py` calls `Base.metadata.create_all(bind=engine)` at startup. This creates tables but does not provide versioned migrations.
+</details>
 
-![Seller Table](backend/images/seller_table.png)
+<details>
+<summary><strong>Does the app seed sample data?</strong></summary>
 
-## Security Notes
+Yes. `seed_database()` imports CSV data only when the `sellers` or `inventory` table is empty. The sample files contain 9 sellers and 20 inventory products.
+</details>
 
-### Seller Key Authentication
+<details>
+<summary><strong>Where does the frontend get the API URL?</strong></summary>
 
-- Each seller is assigned a unique alphanumeric key (4-8 characters)
-- Keys are validated server-side before allowing any seller operations
-- Seller keys are passed via HTTP headers (`SELLER-KEY`)
-- Keys must match the pattern: `^[A-Za-z0-9]+$`
-- Sellers can only access and modify their own products
+`frontend/src/services/api.jsx` reads `import.meta.env.VITE_API_URL`. Set it in `frontend/.env` during local development.
+</details>
 
-### Admin Key Authentication
+<details>
+<summary><strong>Is this ready for public production traffic?</strong></summary>
 
-- Admin operations require a separate admin key
-- Default admin key is configured in `config.py`
-- Admin key is passed via HTTP headers (`Admin-Key`)
-- Admins have full visibility and control over all sellers and products
+Not without hardening. The current implementation is appropriate as a portfolio/demo full-stack project, but production deployment should add secure credential handling, migrations, tests, restricted CORS, HTTPS/reverse proxy configuration, and structured logging.
+</details>
 
-### Authorization Logic
+## Contributing
 
-- **Product Operations**: Require seller key matching the product's seller
-- **Seller Operations**: Require seller key matching the seller being modified
-- **Admin Operations**: Require admin key for full system access
-- **Public Operations**: Product viewing and searching are publicly accessible
+Contributions should preserve the current layered architecture:
 
-### Security Best Practices
+- Add FastAPI endpoints in `backend/routes`.
+- Keep business rules in `backend/services`.
+- Add or update Pydantic schemas in `backend/schemas`.
+- Update SQLAlchemy tables in `backend/models` and document schema changes.
+- Add React pages/components under `frontend/src`.
+- Update documentation whenever API, security, deployment, or database behavior changes.
 
-- All sensitive operations require authentication
-- Input validation using Pydantic schemas
-- SQL injection prevention via SQLAlchemy ORM
-- CORS enabled for development (restrict in production)
-- Environment variables for sensitive configuration
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow.
 
-## Lessons Learned
+## License
 
-### Technical Concepts Demonstrated
-
-#### Backend Development
-
-- **RESTful API Design**: Proper HTTP method usage and resource naming conventions
-- **Layered Architecture**: Separation of concerns across routes, services, and models
-- **ORM Integration**: Database operations using SQLAlchemy with Python
-- **Data Validation**: Pydantic schemas for request/response validation
-- **Dependency Injection**: FastAPI's dependency injection for database sessions
-- **Authentication Patterns**: Header-based authentication for API security
-- **Error Handling**: Comprehensive exception handling and user feedback
-
-#### Frontend Development
-
-- **Component-Based Architecture**: Reusable React components for maintainability
-- **State Management**: Context API and Redux Toolkit for application state
-- **Client-Side Routing**: React Router for SPA navigation
-- **API Integration**: Axios for HTTP requests with interceptors
-- **CSS Modules**: Scoped styling to prevent style conflicts
-- **Responsive Design**: Mobile-first design principles
-- **Form Validation**: Client-side validation with user feedback
-
-#### Database Design
-
-- **Relational Modeling**: Foreign key relationships and data integrity
-- **ORM Patterns**: SQLAlchemy ORM for database abstraction
-- **Schema Design**: Normalized database structure for data consistency
-- **Query Optimization**: Efficient database queries with proper indexing
-
-#### Software Engineering Practices
-
-- **Code Organization**: Modular project structure for scalability
-- **Documentation**: Comprehensive inline documentation and comments
-- **Version Control**: Git for source control and collaboration
-- **Environment Configuration**: Environment variables for configuration management
-- **Testing Strategy**: Separation of concerns for testability
-- **Security Best Practices**: Authentication, validation, and error handling
+No `LICENSE` file is present in this repository. Until a license is added, assume the project is not open for reuse beyond the permissions granted by the repository owner.
 
 ## Author
 
-**Portfolio Project: Multi-Seller Inventory Management System**
-
-This project demonstrates proficiency in full-stack web development, showcasing skills in:
-
-- Backend API development with FastAPI and Python
-- Frontend application development with React and modern JavaScript
-- Database design and ORM integration with SQLAlchemy
-- RESTful API design and implementation
-- Authentication and authorization patterns
-- Responsive UI/UX design
-- State management in React applications
-- Professional code organization and documentation
-
-Built as a demonstration of software engineering best practices and modern web development techniques.
-
----
-
-**Note**: This is a portfolio project designed to showcase full-stack development capabilities. For production deployment, additional security measures, testing, and monitoring should be implemented.
+Author information is not specified in repository metadata. The existing README identifies this as a portfolio project for demonstrating full-stack web development with FastAPI, React, PostgreSQL, SQLAlchemy, REST APIs, and Docker.
